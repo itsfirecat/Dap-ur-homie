@@ -24,7 +24,7 @@ public class DivineFlamTestCommand {
                     }
 
                     ServerWorld world = player.getServerWorld();
-                    Vec3d pos = player.getPos().add(0, 1, 0); // Spawn at player eye level
+                    Vec3d pos = player.getEntityPos().add(0, 1, 0); // Spawn at player eye level
                     Vec3d direction = player.getRotationVector(); // Move in direction player is facing
 
                     // Create test pillar

@@ -158,7 +158,7 @@ public class FallCatchHandler {
             Long readyTime = catchReadyTime.get(catcherId);
             if (readyTime == null) continue;
 
-            if (!searchBox.contains(catcher.getPos())) continue;
+            if (!searchBox.contains(catcher.getEntityPos())) continue;
 
             double dx = fallingPlayer.getX() - catcher.getX();
             double dz = fallingPlayer.getZ() - catcher.getZ();

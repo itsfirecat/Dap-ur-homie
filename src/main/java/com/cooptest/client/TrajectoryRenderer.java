@@ -68,7 +68,7 @@ public class TrajectoryRenderer {
     private static void renderTrajectoryDots(WorldRenderContext context, Vec3d[] points, float charge) {
         MinecraftClient client = MinecraftClient.getInstance();
         Camera camera = context.camera();
-        Vec3d camPos = camera.getPos();
+        Vec3d camPos = camera.getEntityPos();
 
         MatrixStack matrices = context.matrixStack();
         matrices.push();
@@ -78,12 +78,12 @@ public class TrajectoryRenderer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getEntityPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        Matrix4f matrix = matrices.peek().getEntityPositionMatrix();
 
         int r = (int)(charge * 255);
         int g = (int)((1 - charge) * 255);

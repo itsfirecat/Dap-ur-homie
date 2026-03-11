@@ -169,13 +169,13 @@ public class PushInteractionHandler {
             if (c != null) {
                 LaunchedPlayerTracker.markPlayerAsLaunched(c.getUuid());
                 c.addVelocity(0, velocity + 0.2, 0);
-                c.velocityModified = true;
+                c.velocityDirty = true;
                 pushImmunity.put(c.getUuid(), now);
             }
         }
 
         target.addVelocity(0, velocity, 0);
-        target.velocityModified = true;
+        target.velocityDirty = true;
         pushImmunity.put(target.getUuid(), now);
 
         cooldowns.put(pusher.getUuid(), now);
@@ -202,8 +202,8 @@ public class PushInteractionHandler {
         BlockPos pos = player.getBlockPos();
         for (int y = 1; y <= 15; y++) {
             BlockPos check = pos.up(y);
-            BlockState state = player.getWorld().getBlockState(check);
-            if (!state.isAir() && state.isSolidBlock(player.getWorld(), check)) {
+            BlockState state = player.getEntityWorld().getBlockState(check);
+            if (!state.isAir() && state.isSolidBlock(player.getEntityWorld(), check)) {
                 return y;
             }
         }

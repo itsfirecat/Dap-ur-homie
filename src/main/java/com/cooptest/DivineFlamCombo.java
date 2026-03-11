@@ -141,7 +141,7 @@ public class DivineFlamCombo {
         PoseNetworking.broadcastAnimState(p2, 38);
 
         ServerWorld world = p1.getServerWorld();
-        Vec3d midpoint = p1.getPos().add(p2.getPos()).multiply(0.5);
+        Vec3d midpoint = p1.getEntityPos().add(p2.getEntityPos()).multiply(0.5);
 
         System.out.println("[Divine Flame] Spawning Divine Flame vortex at " + midpoint);
 
@@ -172,11 +172,11 @@ public class DivineFlamCombo {
             ServerPlayerEntity p2 = world.getServer().getPlayerManager().getPlayer(id2);
 
             if (p1 != null && p2 != null) {
-                double distance = p1.getPos().distanceTo(p2.getPos());
+                double distance = p1.getEntityPos().distanceTo(p2.getEntityPos());
 
                 if (distance > 1.0) {
-                    Vec3d p1Pos = p1.getPos();
-                    Vec3d p2Pos = p2.getPos();
+                    Vec3d p1Pos = p1.getEntityPos();
+                    Vec3d p2Pos = p2.getEntityPos();
 
                     Vec3d direction = p2Pos.subtract(p1Pos).normalize();
 

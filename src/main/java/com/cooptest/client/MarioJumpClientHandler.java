@@ -37,7 +37,7 @@ public class MarioJumpClientHandler {
         ClientPlayerEntity player = client.player;
         if (player == null) return false;
 
-        Vec3d playerPos = player.getPos();
+        Vec3d playerPos = player.getEntityPos();
         double playerFeetY = playerPos.y;
 
         Box searchBox = new Box(
@@ -51,14 +51,14 @@ public class MarioJumpClientHandler {
         );
 
         for (PlayerEntity target : nearby) {
-            Vec3d targetPos = target.getPos();
-            double targetHeadY = targetPos.y + target.getStandingEyeHeight() + 0.15;
+            Vec3d targetEntityPos = target.getEntityPos();
+            double targetHeadY = targetEntityPos.y + target.getStandingEyeHeight() + 0.15;
 
             double heightDiff = playerFeetY - targetHeadY;
             if (heightDiff >= -0.35 && heightDiff <= 0.5) {
                 double horizDist = Math.sqrt(
-                    Math.pow(playerPos.x - targetPos.x, 2) +
-                    Math.pow(playerPos.z - targetPos.z, 2)
+                    Math.pow(playerPos.x - targetEntityPos.x, 2) +
+                    Math.pow(playerPos.z - targetEntityPos.z, 2)
                 );
                 if (horizDist <= 0.7) {
                     return true;

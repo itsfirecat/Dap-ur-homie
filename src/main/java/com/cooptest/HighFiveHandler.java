@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -460,7 +461,7 @@ public class HighFiveHandler {
                 ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
                 if (player != null) {
                     Vec3d frozenPos = entry.getValue();
-                    Vec3d currentPos = player.getPos();
+                    Vec3d currentPos = player.getEntityPos();
 
                     // If player moved more than 0.1 blocks, teleport back
                     if (currentPos.squaredDistanceTo(frozenPos) > 0.01) {
@@ -614,7 +615,7 @@ public class HighFiveHandler {
         broadcastHighFiveAnim(player, ANIM_END);
 
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos().add(0, 1.6, 0);
+        Vec3d pos = player.getEntityPos().add(0, 1.6, 0);
         world.playSound(null, pos.x, pos.y, pos.z,
                 SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 0.8f, 0.5f);
         world.playSound(null, pos.x, pos.y, pos.z,
@@ -622,7 +623,7 @@ public class HighFiveHandler {
 
         world.spawnParticles(ParticleTypes.POOF, pos.x, pos.y, pos.z, 6, 0.15, 0.15, 0.15, 0.01);
 
-        player.sendMessage(net.minecraft.text.Text.literal("§7*left hanging*"), true);
+        player.sendMessage(Text.literal("§7*left hanging*"), true);
     }
 
    
@@ -761,8 +762,8 @@ public class HighFiveHandler {
         else if (maxSpeed >= SPEED_TIER_2) tier = 2; // Big impact
         else if (maxSpeed >= SPEED_TIER_1) tier = 1; // Medium impact
 
-        Vec3d pos1 = player1.getPos();
-        Vec3d pos2 = player2.getPos();
+        Vec3d pos1 = player1.getEntityPos();
+        Vec3d pos2 = player2.getEntityPos();
         Vec3d highFivePos = pos1.add(pos2).multiply(0.5).add(0, 1.4, 0);
 
         pendingEffects.put(player1.getUuid(), new PendingHighFive(
@@ -923,12 +924,12 @@ public class HighFiveHandler {
         for (Entity entity : world.getOtherEntities(null, pushBox)) {
             if (entity == p1 || entity == p2) continue; // Don't push the high-fivers
 
-            double dist = entity.getPos().distanceTo(pos);
+            double dist = entity.getEntityPos().distanceTo(pos);
             if (dist > radius || dist < 0.5) continue;
 
             double strength = (1.0 - (dist / radius)) * 4.0 + 1.0; // 1.0 to 5.0 (much stronger!)
 
-            Vec3d dir = entity.getPos().subtract(pos).normalize();
+            Vec3d dir = entity.getEntityPos().subtract(pos).normalize();
             if (dir.lengthSquared() < 0.01) {
                 dir = new Vec3d(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
             }
@@ -953,8 +954,8 @@ public class HighFiveHandler {
     }
 
     private static void applyKnockback(ServerPlayerEntity p1, ServerPlayerEntity p2, Vec3d center, double strength) {
-        Vec3d dir1 = p1.getPos().subtract(center).normalize();
-        Vec3d dir2 = p2.getPos().subtract(center).normalize();
+        Vec3d dir1 = p1.getEntityPos().subtract(center).normalize();
+        Vec3d dir2 = p2.getEntityPos().subtract(center).normalize();
 
         if (dir1.lengthSquared() < 0.01) dir1 = new Vec3d(1, 0, 0);
         if (dir2.lengthSquared() < 0.01) dir2 = new Vec3d(-1, 0, 0);
@@ -963,8 +964,8 @@ public class HighFiveHandler {
         p1.setVelocity(dir1.x * push, 0.05, dir1.z * push);
         p2.setVelocity(dir2.x * push, 0.05, dir2.z * push);
 
-        p1.velocityModified = true;
-        p2.velocityModified = true;
+        p1.velocityDirty = true;
+        p2.velocityDirty = true;
     }
 
     private static void createHighFiveExplosion(ServerWorld world, Vec3d pos, ServerPlayerEntity p1, ServerPlayerEntity p2) {
@@ -977,13 +978,13 @@ public class HighFiveHandler {
         for (Entity entity : world.getOtherEntities(null, damageBox)) {
             if (entity == p1 || entity == p2) continue; // Skip the high-fivers
 
-            double dist = entity.getPos().distanceTo(pos);
+            double dist = entity.getEntityPos().distanceTo(pos);
             if (dist > radius) continue;
 
             double knockbackStrength = (1.0 - dist / radius) * 2.0;
-            Vec3d knockDir = entity.getPos().subtract(pos).normalize();
+            Vec3d knockDir = entity.getEntityPos().subtract(pos).normalize();
             entity.addVelocity(knockDir.x * knockbackStrength, knockbackStrength * 0.5, knockDir.z * knockbackStrength);
-            entity.velocityModified = true;
+            entity.velocityDirty = true;
 
             if (entity instanceof ServerPlayerEntity target) {
                 float damage = (float)((1.0 - dist / radius) * 8.0);
@@ -1085,13 +1086,13 @@ public class HighFiveHandler {
         comboFreezeEnd.put(id1, now + COMBO_FREEZE_MS);
         comboFreezeEnd.put(id2, now + COMBO_FREEZE_MS);
 
-        frozenPositions.put(id1, p1.getPos());
-        frozenPositions.put(id2, p2.getPos());
+        frozenPositions.put(id1, p1.getEntityPos());
+        frozenPositions.put(id2, p2.getEntityPos());
 
         p1.setVelocity(Vec3d.ZERO);
         p2.setVelocity(Vec3d.ZERO);
-        p1.velocityModified = true;
-        p2.velocityModified = true;
+        p1.velocityDirty = true;
+        p2.velocityDirty = true;
 
         for (ServerPlayerEntity p : PlayerLookup.all(p1.getServer())) {
             ServerPlayNetworking.send(p, new FreezeStatePayload(id1, true));
@@ -1110,7 +1111,7 @@ public class HighFiveHandler {
 
    
     private static void executeSecondImpact(ServerPlayerEntity p1, ServerPlayerEntity p2) {
-        Vec3d pos = p1.getPos().add(p2.getPos()).multiply(0.5).add(0, 0.5, 0); // Lower - at waist level
+        Vec3d pos = p1.getEntityPos().add(p2.getEntityPos()).multiply(0.5).add(0, 0.5, 0); // Lower - at waist level
         ServerWorld world = p1.getServerWorld();
 
         world.playSound(null, pos.x, pos.y, pos.z,

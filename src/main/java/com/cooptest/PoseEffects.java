@@ -11,7 +11,7 @@ public class PoseEffects {
 
     public static void playIdleEffects(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
 
         // Whoosh sound
         world.playSound(null, pos.x, pos.y, pos.z,
@@ -23,8 +23,8 @@ public class PoseEffects {
 
     public static void playActionEffects(ServerPlayerEntity pusher, ServerPlayerEntity target) {
         ServerWorld world = pusher.getServerWorld();
-        Vec3d pusherPos = pusher.getPos();
-        Vec3d targetPos = target.getPos();
+        Vec3d pusherPos = pusher.getEntityPos();
+        Vec3d targetEntityPos = target.getEntityPos();
 
         float yaw = pusher.getYaw();
         double radians = Math.toRadians(yaw);
@@ -73,23 +73,23 @@ public class PoseEffects {
                 3, 0.1, 0.1, 0.1, 0.02);
 
         // Swoosh for target
-        world.playSound(null, targetPos.x, targetPos.y, targetPos.z,
+        world.playSound(null, targetEntityPos.x, targetEntityPos.y, targetEntityPos.z,
                 SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP,
                 SoundCategory.PLAYERS, 0.8f, 1.5f);
 
         // Small poof at target impact point
         world.spawnParticles(ParticleTypes.POOF,
-                targetPos.x, targetPos.y + 0.5, targetPos.z,
+                targetEntityPos.x, targetEntityPos.y + 0.5, targetEntityPos.z,
                 3, 0.2, 0.2, 0.2, 0.02);
 
         // Push pusher down slightly
         pusher.setVelocity(pusher.getVelocity().add(0, -0.15, 0));
-        pusher.velocityModified = true;
+        pusher.velocityDirty = true;
     }
 
     public static void playLaunchTrailEffects(ServerPlayerEntity target) {
         ServerWorld world = target.getServerWorld();
-        Vec3d pos = target.getPos();
+        Vec3d pos = target.getEntityPos();
 
         world.spawnParticles(ParticleTypes.CLOUD,
                 pos.x, pos.y + 0.5, pos.z,

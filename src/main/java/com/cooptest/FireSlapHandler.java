@@ -39,10 +39,10 @@ public class FireSlapHandler {
 
     private static void executeFireSlap(ServerPlayerEntity player, LivingEntity target) {
         ServerWorld world = player.getServerWorld();
-        Vec3d playerPos = player.getPos();
-        Vec3d targetPos = target.getPos();
+        Vec3d playerPos = player.getEntityPos();
+        Vec3d targetEntityPos = target.getEntityPos();
 
-        Vec3d direction = targetPos.subtract(playerPos).normalize();
+        Vec3d direction = targetEntityPos.subtract(playerPos).normalize();
 
         target.setVelocity(
                 direction.x * SLAP_KNOCKBACK,

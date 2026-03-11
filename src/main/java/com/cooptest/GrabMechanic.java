@@ -1,6 +1,6 @@
 package com.cooptest;
 
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
@@ -85,7 +85,7 @@ public class GrabMechanic {
         PoseState holderPose = PoseNetworking.poseStates.getOrDefault(holder.getUuid(), PoseState.NONE);
         if (holderPose != PoseState.GRAB_READY) return false;
 
-        boolean success = held.startRiding(holder, true);
+        boolean success = held.startRiding(holder);
         if (!success) return false;
 
         holding.put(holder.getUuid(), held.getUuid());
@@ -94,18 +94,18 @@ public class GrabMechanic {
         PoseNetworking.poseStates.put(holder.getUuid(), PoseState.GRAB_HOLDING);
         PoseNetworking.poseStates.put(held.getUuid(), PoseState.GRABBED);
 
-        if (holder.getServer() != null) {
-            PoseNetworking.broadcastPoseChange(holder.getServer(), holder.getUuid(), PoseState.GRAB_HOLDING);
-            PoseNetworking.broadcastPoseChange(holder.getServer(), held.getUuid(), PoseState.GRABBED);
-            GrabNetworking.broadcastGrabState(holder.getServer(), holder.getUuid(), held.getUuid(), true);
+        if (holder.getEntityWorld() != null) {
+            PoseNetworking.broadcastPoseChange(holder.getEntityWorld(), holder.getUuid(), PoseState.GRAB_HOLDING);
+            PoseNetworking.broadcastPoseChange(holder.getEntityWorld(), held.getUuid(), PoseState.GRABBED);
+            GrabNetworking.broadcastGrabState(holder.getEntityWorld(), holder.getUuid(), held.getUuid(), true);
 
             EntityPassengersSetS2CPacket packet = new EntityPassengersSetS2CPacket(holder);
-            for (ServerPlayerEntity p : holder.getServer().getPlayerManager().getPlayerList()) {
+            for (ServerPlayerEntity p : holder.getEntityWorld().getPlayerManager().getPlayerList()) {
                 p.networkHandler.sendPacket(packet);
             }
         }
 
-        holder.getServerWorld().playSound(null, holder.getX(), holder.getY(), holder.getZ(),
+        holder.getEntityWorld().playSound(null, holder.getX(), holder.getY(), holder.getZ(),
                 SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
         return true;
@@ -146,7 +146,7 @@ public class GrabMechanic {
 
         Vec3d throwVelocity = new Vec3d(horizX, verticalVel, horizZ);
 
-        Vec3d releasePos = holder.getPos()
+        Vec3d releasePos = holder.getEntityPos()
                 .add(lookDir.multiply(1.5).multiply(1, 0, 1))
                 .add(0, 0.5, 0);
 
@@ -186,7 +186,7 @@ public class GrabMechanic {
 
     private static void spawnThrowParticles(ServerPlayerEntity holder, ServerPlayerEntity held) {
         ServerWorld world = holder.getServerWorld();
-        Vec3d pos = holder.getPos();
+        Vec3d pos = holder.getEntityPos();
 
         for (int i = 0; i < 10; i++) {
             double offsetX = (world.random.nextDouble() - 0.5) * 0.5;
@@ -308,7 +308,7 @@ public class GrabMechanic {
             if (data.lastPos != null) {
                 checkWallCollision(player, data);
             }
-            data.lastPos = player.getPos();
+            data.lastPos = player.getEntityPos();
 
             if (data.ticksFlying % 2 == 0) {
                 spawnTrailParticles(player);
@@ -364,7 +364,7 @@ public class GrabMechanic {
     
     private static void checkWallCollision(ServerPlayerEntity player, ThrownPlayerData data) {
         ServerWorld world = player.getServerWorld();
-        Vec3d currentPos = player.getPos();
+        Vec3d currentPos = player.getEntityPos();
         Vec3d velocity = player.getVelocity();
 
         double speed = velocity.horizontalLength();
@@ -481,7 +481,7 @@ public class GrabMechanic {
 
     private static void spawnTrailParticles(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
 
         world.spawnParticles(ParticleTypes.CLOUD,
                 pos.x, pos.y + 0.5, pos.z,
@@ -490,7 +490,7 @@ public class GrabMechanic {
 
     private static void spawnLandingParticles(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
 
         // Get the block below for block-break particles
         BlockPos groundPos = player.getBlockPos().down();
@@ -640,7 +640,7 @@ public class GrabMechanic {
                 }
             }
 
-            Vec3d escapePos = held.getPos().add(0, 0.1, 0);
+            Vec3d escapePos = held.getEntityPos().add(0, 0.1, 0);
             held.requestTeleport(escapePos.x, escapePos.y, escapePos.z);
         }
 
@@ -689,7 +689,7 @@ public class GrabMechanic {
      */
     private static void spawnFireTrail(ServerPlayerEntity player, ThrownPlayerData data) {
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
 
         // Spawn fire particles
         world.spawnParticles(ParticleTypes.FLAME,
@@ -749,7 +749,7 @@ public class GrabMechanic {
         );
 
         for (var ghast : nearbyGhasts) {
-            Vec3d ghastPos = ghast.getPos();
+            Vec3d ghastPos = ghast.getEntityPos();
 
             ghast.damage(world.getDamageSources().playerAttack(player), 1000f);
 
@@ -770,7 +770,7 @@ public class GrabMechanic {
     
     private static void createFireExplosion(ServerPlayerEntity player) {
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
 
         world.createExplosion(
                 player,

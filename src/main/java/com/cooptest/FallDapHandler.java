@@ -240,7 +240,7 @@ public class FallDapHandler {
 
     private static void squashPlayer(ServerPlayerEntity attacker, ServerPlayerEntity victim) {
         ServerWorld world = attacker.getServerWorld();
-        Vec3d pos = victim.getPos();
+        Vec3d pos = victim.getEntityPos();
 
         world.playSound(null, pos.x, pos.y, pos.z,
                 SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.PLAYERS, 2.0f, 0.5f);

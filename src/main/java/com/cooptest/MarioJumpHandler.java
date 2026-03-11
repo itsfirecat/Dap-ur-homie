@@ -130,7 +130,7 @@ public class MarioJumpHandler {
      */
     private static ServerPlayerEntity findPlayerBelow(ServerPlayerEntity jumper) {
         ServerWorld world = jumper.getServerWorld();
-        Vec3d jumperPos = jumper.getPos();
+        Vec3d jumperPos = jumper.getEntityPos();
         double jumperFeetY = jumperPos.y;
 
         Box searchBox = new Box(
@@ -144,14 +144,14 @@ public class MarioJumpHandler {
         );
 
         for (ServerPlayerEntity target : nearby) {
-            Vec3d targetPos = target.getPos();
-            double targetHeadY = targetPos.y + target.getStandingEyeHeight() + 0.15;
+            Vec3d targetEntityPos = target.getEntityPos();
+            double targetHeadY = targetEntityPos.y + target.getStandingEyeHeight() + 0.15;
 
             double heightDiff = jumperFeetY - targetHeadY;
             if (heightDiff >= -0.35 && heightDiff <= 0.5) {
                 double horizDist = Math.sqrt(
-                        Math.pow(jumperPos.x - targetPos.x, 2) +
-                                Math.pow(jumperPos.z - targetPos.z, 2)
+                        Math.pow(jumperPos.x - targetEntityPos.x, 2) +
+                                Math.pow(jumperPos.z - targetEntityPos.z, 2)
                 );
                 if (horizDist <= 0.7) {
                     return target;
@@ -167,7 +167,7 @@ public class MarioJumpHandler {
      */
     private static void executeMarioJump(ServerPlayerEntity jumper, ServerPlayerEntity target) {
         ServerWorld world = jumper.getServerWorld();
-        Vec3d pos = jumper.getPos();
+        Vec3d pos = jumper.getEntityPos();
         long now = System.currentTimeMillis();
 
         // DEBUG: Log animation triggers I HATE THIS
@@ -179,7 +179,7 @@ public class MarioJumpHandler {
 
         Vec3d velocity = jumper.getVelocity();
         jumper.setVelocity(velocity.x, LAUNCH_VELOCITY, velocity.z);
-        jumper.velocityModified = true;
+        jumper.velocityDirty = true;
         PoseNetworking.broadcastAnimState(jumper, 30); // MARIO_JUMP
         PoseNetworking.broadcastAnimState(target, 31); // POP
 

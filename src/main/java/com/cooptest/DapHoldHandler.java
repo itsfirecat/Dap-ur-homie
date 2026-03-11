@@ -104,8 +104,8 @@ public class DapHoldHandler {
 
 
     private static void makeFaceEachOther(ServerPlayerEntity p1, ServerPlayerEntity p2) {
-        Vec3d p1Pos = p1.getPos();
-        Vec3d p2Pos = p2.getPos();
+        Vec3d p1Pos = p1.getEntityPos();
+        Vec3d p2Pos = p2.getEntityPos();
 
         p1.swingHand(net.minecraft.util.Hand.MAIN_HAND);
         p2.swingHand(net.minecraft.util.Hand.MAIN_HAND);
@@ -130,8 +130,8 @@ public class DapHoldHandler {
 
 
     private static boolean arePlayersFacingEachOther(ServerPlayerEntity p1, ServerPlayerEntity p2) {
-        net.minecraft.util.math.Vec3d p1Pos = p1.getPos();
-        net.minecraft.util.math.Vec3d p2Pos = p2.getPos();
+        net.minecraft.util.math.Vec3d p1Pos = p1.getEntityPos();
+        net.minecraft.util.math.Vec3d p2Pos = p2.getEntityPos();
 
         net.minecraft.util.math.Vec3d directionTo = p2Pos.subtract(p1Pos).normalize();
         net.minecraft.util.math.Vec3d p1Looking = p1.getRotationVector();
@@ -277,7 +277,7 @@ public class DapHoldHandler {
             Long loopStart = loopStartTime.get(hfId);
 
             if (stand != null && !stand.isRemoved()) {
-                Vec3d impactPos = stand.getPos();
+                Vec3d impactPos = stand.getEntityPos();
 
                 world.spawnParticles(net.minecraft.particle.ParticleTypes.CRIT,
                         impactPos.x, impactPos.y, impactPos.z,
@@ -337,23 +337,23 @@ public class DapHoldHandler {
     }
 
     private static void smoothTP(ServerPlayerEntity hf, ServerPlayerEntity dap, UUID hfId) {
-        double dist = hf.getPos().distanceTo(dap.getPos());
+        double dist = hf.getEntityPos().distanceTo(dap.getEntityPos());
         if (dist <= STOP_DISTANCE) {
             tpComplete.add(hfId);
             faceEachOther(hf, dap);
             return;
         }
         double move = Math.min(TP_SPEED, (dist - STOP_DISTANCE) / 2.0);
-        Vec3d dir   = dap.getPos().subtract(hf.getPos()).normalize();
-        Vec3d newHf  = hf.getPos().add(dir.multiply(move));
-        Vec3d newDap = dap.getPos().add(dir.negate().multiply(move));
+        Vec3d dir   = dap.getEntityPos().subtract(hf.getEntityPos()).normalize();
+        Vec3d newHf  = hf.getEntityPos().add(dir.multiply(move));
+        Vec3d newDap = dap.getEntityPos().add(dir.negate().multiply(move));
 
         hf.teleport(hf.getServerWorld(),   newHf.x,  newHf.y,  newHf.z,  hf.getYaw(),  hf.getPitch());
         dap.teleport(dap.getServerWorld(), newDap.x, newDap.y, newDap.z, dap.getYaw(), dap.getPitch());
     }
 
     private static void faceEachOther(ServerPlayerEntity a, ServerPlayerEntity b) {
-        Vec3d diff = b.getPos().subtract(a.getPos());
+        Vec3d diff = b.getEntityPos().subtract(a.getEntityPos());
         float yawA = (float)(Math.toDegrees(Math.atan2(diff.z, diff.x))) - 90f;
         a.teleport(a.getServerWorld(), a.getX(), a.getY(), a.getZ(), yawA,        a.getPitch());
         b.teleport(b.getServerWorld(), b.getX(), b.getY(), b.getZ(), yawA + 180f, b.getPitch());
@@ -361,7 +361,7 @@ public class DapHoldHandler {
 
     private static void spawnHandStand(ServerPlayerEntity hf, ServerPlayerEntity dap) {
         ServerWorld world = hf.getServerWorld();
-        Vec3d mid = hf.getPos().add(0, 1.4, 0).add(dap.getPos().add(0, 1.4, 0)).multiply(0.5);
+        Vec3d mid = hf.getEntityPos().add(0, 1.4, 0).add(dap.getEntityPos().add(0, 1.4, 0)).multiply(0.5);
 
         ArmorStandEntity stand = new ArmorStandEntity(EntityType.ARMOR_STAND, world);
         stand.setPosition(mid.x, mid.y, mid.z);
@@ -377,7 +377,7 @@ public class DapHoldHandler {
     private static void updateHandStand(ServerPlayerEntity hf, ServerPlayerEntity dap, UUID hfId) {
         ArmorStandEntity stand = handStands.get(hfId);
         if (stand == null || stand.isRemoved()) return;
-        Vec3d mid = hf.getPos().add(0, 1.4, 0).add(dap.getPos().add(0, 1.4, 0)).multiply(0.5);
+        Vec3d mid = hf.getEntityPos().add(0, 1.4, 0).add(dap.getEntityPos().add(0, 1.4, 0)).multiply(0.5);
         stand.setPosition(mid.x, mid.y, mid.z);
     }
 
@@ -388,7 +388,7 @@ public class DapHoldHandler {
         if (stand != null && !stand.isRemoved()) {
             x = stand.getX(); y = stand.getY(); z = stand.getZ();
         } else {
-            Vec3d mid = hf.getPos().add(dap.getPos()).multiply(0.5).add(0, 1.4, 0);
+            Vec3d mid = hf.getEntityPos().add(dap.getEntityPos()).multiply(0.5).add(0, 1.4, 0);
             x = mid.x; y = mid.y; z = mid.z;
         }
 

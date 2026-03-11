@@ -122,7 +122,7 @@ public class HighFiveHugHandler {
         }
 
         // Check distance
-        double distance = player.getPos().distanceTo(partner.getPos());
+        double distance = player.getEntityPos().distanceTo(partner.getEntityPos());
         if (distance > HUG_DISTANCE) {
             // Too far apart
             player.sendMessage(Text.literal("§c❤ Get closer to hug! ❤"), true);
@@ -245,10 +245,10 @@ public class HighFiveHugHandler {
                 }
 
                 // Teleport players together if too far apart
-                double distance = player.getPos().distanceTo(partner.getPos());
+                double distance = player.getEntityPos().distanceTo(partner.getEntityPos());
                 if (distance > 1.0) {  // Only TP if getting too far (adjust this!)
-                    Vec3d playerPos = player.getPos();
-                    Vec3d partnerPos = partner.getPos();
+                    Vec3d playerPos = player.getEntityPos();
+                    Vec3d partnerPos = partner.getEntityPos();
 
                     // Direction from player to partner
                     Vec3d direction = partnerPos.subtract(playerPos).normalize();
@@ -338,7 +338,7 @@ public class HighFiveHugHandler {
                 StatusEffects.REGENERATION, 40, 1, false, false));
 
         // Heart particles
-        Vec3d pos = p1.getPos().add(p2.getPos()).multiply(0.5).add(0, 1, 0);
+        Vec3d pos = p1.getEntityPos().add(p2.getEntityPos()).multiply(0.5).add(0, 1, 0);
         ServerWorld world = p1.getServerWorld();
 
         world.spawnParticles(ParticleTypes.HEART,

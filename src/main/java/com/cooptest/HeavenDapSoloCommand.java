@@ -28,7 +28,7 @@ public class HeavenDapSoloCommand {
         }
 
         ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos().add(0, 1.4, 0); // Just at your location
+        Vec3d pos = player.getEntityPos().add(0, 1.4, 0); // Just at your location
 
 
         world.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -147,7 +147,7 @@ public class HeavenDapSoloCommand {
 
 
     private static void teleportToHeaven(ServerPlayerEntity player, ServerWorld world, Vec3d groundPos) {
-        final Vec3d originalPos = player.getPos();
+        final Vec3d originalPos = player.getEntityPos();
         
         Vec3d heavenPos = new Vec3d(groundPos.x, groundPos.y + 1000, groundPos.z);
         player.teleport(world, heavenPos.x, heavenPos.y, heavenPos.z, player.getYaw(), player.getPitch());

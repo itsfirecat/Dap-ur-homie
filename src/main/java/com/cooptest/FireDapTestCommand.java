@@ -24,7 +24,7 @@ public class FireDapTestCommand {
         try {
             ServerPlayerEntity player = source.getPlayerOrThrow();
             
-            Vec3d pos = player.getPos();
+            Vec3d pos = player.getEntityPos();
             Vec3d fakePartnerPos = pos.add(1.0, 0, 0); // 1 block to the right
             
             player.sendMessage(Text.literal("§a[TEST] Starting Fire Dap test..."), false);
