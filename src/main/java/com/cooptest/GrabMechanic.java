@@ -94,12 +94,12 @@ public class GrabMechanic {
         PoseNetworking.poseStates.put(held.getUuid(), PoseState.GRABBED);
 
         if (holder.getEntityWorld() != null) {
-            PoseNetworking.broadcastPoseChange(holder.getEntityWorld(), holder.getUuid(), PoseState.GRAB_HOLDING);
-            PoseNetworking.broadcastPoseChange(holder.getEntityWorld(), held.getUuid(), PoseState.GRABBED);
-            GrabNetworking.broadcastGrabState(holder.getEntityWorld(), holder.getUuid(), held.getUuid(), true);
+            PoseNetworking.broadcastPoseChange(holder.getEntityWorld().getServer(), holder.getUuid(), PoseState.GRAB_HOLDING);
+            PoseNetworking.broadcastPoseChange(holder.getEntityWorld().getServer(), held.getUuid(), PoseState.GRABBED);
+            GrabNetworking.broadcastGrabState(holder.getEntityWorld().getServer(), holder.getUuid(), held.getUuid(), true);
 
             EntityPassengersSetS2CPacket packet = new EntityPassengersSetS2CPacket(holder);
-            for (ServerPlayerEntity p : holder.getEntityWorld().getPlayerManager().getPlayerList()) {
+            for (ServerPlayerEntity p : holder.getEntityWorld().getServer().getPlayerManager().getPlayerList()) {
                 p.networkHandler.sendPacket(packet);
             }
         }
