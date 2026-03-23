@@ -102,7 +102,7 @@ public class HighFiveHugHandler {
         UUID partnerId = hugPartner.get(playerId);
         if (partnerId == null) return;
 
-        ServerPlayerEntity partner = player.getServer().getPlayerManager().getPlayer(partnerId);
+        ServerPlayerEntity partner = player.getEntityWorld().getServer().getPlayerManager().getPlayer(partnerId);
         if (partner == null) return;
 
         Long partnerHoldStart = hugHoldStart.get(partnerId);
@@ -122,7 +122,7 @@ public class HighFiveHugHandler {
         }
 
         // Check distance
-        double distance = player.getPos().distanceTo(partner.getPos());
+        double distance = player.getEntityPos().distanceTo(partner.getEntityPos());
         if (distance > HUG_DISTANCE) {
             // Too far apart
             player.sendMessage(Text.literal("§c❤ Get closer to hug! ❤"), true);
@@ -245,10 +245,10 @@ public class HighFiveHugHandler {
                 }
 
                 // Teleport players together if too far apart
-                double distance = player.getPos().distanceTo(partner.getPos());
+                double distance = player.getEntityPos().distanceTo(partner.getEntityPos());
                 if (distance > 1.0) {  // Only TP if getting too far (adjust this!)
-                    Vec3d playerPos = player.getPos();
-                    Vec3d partnerPos = partner.getPos();
+                    Vec3d playerPos = player.getEntityPos();
+                    Vec3d partnerPos = partner.getEntityPos();
 
                     // Direction from player to partner
                     Vec3d direction = partnerPos.subtract(playerPos).normalize();
@@ -263,8 +263,8 @@ public class HighFiveHugHandler {
                     Vec3d targetPlayer = midpoint.subtract(offset);
                     Vec3d targetPartner = midpoint.add(offset);
 
-                    player.teleport(player.getServerWorld(), targetPlayer.x, targetPlayer.y, targetPlayer.z, player.getYaw(), player.getPitch());
-                    partner.teleport(partner.getServerWorld(), targetPartner.x, targetPartner.y, targetPartner.z, partner.getYaw(), partner.getPitch());
+                    player.teleport(player.getEntityWorld(), targetPlayer.x, targetPlayer.y, targetPlayer.z, player.getYaw(), player.getPitch());
+                    partner.teleport(partner.getEntityWorld(), targetPartner.x, targetPartner.y, targetPartner.z, partner.getYaw(), partner.getPitch());
                 } else if (distance > HUG_DISTANCE + 0.5) {
                     // Way too far apart - end hug
                     stateChanges.add(() -> endHug(player, partner));
@@ -338,8 +338,8 @@ public class HighFiveHugHandler {
                 StatusEffects.REGENERATION, 40, 1, false, false));
 
         // Heart particles
-        Vec3d pos = p1.getPos().add(p2.getPos()).multiply(0.5).add(0, 1, 0);
-        ServerWorld world = p1.getServerWorld();
+        Vec3d pos = p1.getEntityPos().add(p2.getEntityPos()).multiply(0.5).add(0, 1, 0);
+        ServerWorld world = p1.getEntityWorld();
 
         world.spawnParticles(ParticleTypes.HEART,
                 pos.x, pos.y, pos.z,

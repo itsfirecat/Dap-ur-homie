@@ -64,7 +64,7 @@ public class PushInteractionHandler {
 
     public static void register() {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (world.isClient) return ActionResult.PASS;
+            if (world.isClient()) return ActionResult.PASS;
             if (!(entity instanceof PlayerEntity target)) return ActionResult.PASS;
             if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.PASS;
             if (!(target instanceof ServerPlayerEntity serverTarget)) return ActionResult.PASS;
@@ -165,24 +165,24 @@ public class PushInteractionHandler {
 
         UUID carried = GrabMechanic.holding.get(target.getUuid());
         if (carried != null) {
-            ServerPlayerEntity c = target.getServer().getPlayerManager().getPlayer(carried);
+            ServerPlayerEntity c = target.getEntityWorld().getServer().getPlayerManager().getPlayer(carried);
             if (c != null) {
                 LaunchedPlayerTracker.markPlayerAsLaunched(c.getUuid());
                 c.addVelocity(0, velocity + 0.2, 0);
-                c.velocityModified = true;
+                c.velocityDirty = true;
                 pushImmunity.put(c.getUuid(), now);
             }
         }
 
         target.addVelocity(0, velocity, 0);
-        target.velocityModified = true;
+        target.velocityDirty = true;
         pushImmunity.put(target.getUuid(), now);
 
         cooldowns.put(pusher.getUuid(), now);
         cooldowns.put(target.getUuid(), now);
 
         PoseNetworking.broadcastPoseChange(
-                Objects.requireNonNull(pusher.getServer()),
+                Objects.requireNonNull(pusher.getEntityWorld().getServer()),
                 pusher.getUuid(),
                 PoseState.PUSH_ACTION
         );
@@ -202,8 +202,8 @@ public class PushInteractionHandler {
         BlockPos pos = player.getBlockPos();
         for (int y = 1; y <= 15; y++) {
             BlockPos check = pos.up(y);
-            BlockState state = player.getWorld().getBlockState(check);
-            if (!state.isAir() && state.isSolidBlock(player.getWorld(), check)) {
+            BlockState state = player.getEntityWorld().getBlockState(check);
+            if (!state.isAir() && state.isSolidBlock(player.getEntityWorld(), check)) {
                 return y;
             }
         }

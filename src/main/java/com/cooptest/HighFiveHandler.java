@@ -9,10 +9,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -460,13 +462,13 @@ public class HighFiveHandler {
                 ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
                 if (player != null) {
                     Vec3d frozenPos = entry.getValue();
-                    Vec3d currentPos = player.getPos();
+                    Vec3d currentPos = player.getEntityPos();
 
                     // If player moved more than 0.1 blocks, teleport back
                     if (currentPos.squaredDistanceTo(frozenPos) > 0.01) {
                         player.requestTeleport(frozenPos.x, frozenPos.y, frozenPos.z);
                         player.setVelocity(Vec3d.ZERO);
-                        player.velocityModified = true;
+                        player.velocityDirty = true;
                     }
                 }
             }
@@ -613,8 +615,8 @@ public class HighFiveHandler {
 
         broadcastHighFiveAnim(player, ANIM_END);
 
-        ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos().add(0, 1.6, 0);
+        ServerWorld world = player.getEntityWorld();
+        Vec3d pos = player.getEntityPos().add(0, 1.6, 0);
         world.playSound(null, pos.x, pos.y, pos.z,
                 SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, SoundCategory.PLAYERS, 0.8f, 0.5f);
         world.playSound(null, pos.x, pos.y, pos.z,
@@ -622,12 +624,12 @@ public class HighFiveHandler {
 
         world.spawnParticles(ParticleTypes.POOF, pos.x, pos.y, pos.z, 6, 0.15, 0.15, 0.15, 0.01);
 
-        player.sendMessage(net.minecraft.text.Text.literal("§7*left hanging*"), true);
+        player.sendMessage(Text.literal("§7*left hanging*"), true);
     }
 
    
     private static void broadcastHighFiveAnim(ServerPlayerEntity player, int animState) {
-        var server = player.getServer();
+        var server = player.getEntityWorld().getServer();
         if (server == null) return;
 
         HighFiveAnimPayload payload = new HighFiveAnimPayload(player.getUuid(), animState);
@@ -689,7 +691,7 @@ public class HighFiveHandler {
 
             broadcastHighFiveAnim(player, ANIM_START);
 
-            player.getServerWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
+            player.getEntityWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.3f, 1.5f);
         }
     }
@@ -701,7 +703,7 @@ public class HighFiveHandler {
 
         HandRaisedSyncPayload payload = new HandRaisedSyncPayload(player.getUuid(), raised);
 
-        for (ServerPlayerEntity other : PlayerLookup.all(player.getServer())) {
+        for (ServerPlayerEntity other : PlayerLookup.all(player.getEntityWorld().getServer())) {
             ServerPlayNetworking.send(other, payload);
         }
     }
@@ -710,7 +712,7 @@ public class HighFiveHandler {
         Box searchBox = player.getBoundingBox().expand(HIGH_FIVE_RANGE);
         long now = System.currentTimeMillis();
 
-        for (ServerPlayerEntity other : player.getServerWorld().getPlayers()) {
+        for (ServerPlayerEntity other : player.getEntityWorld().getPlayers()) {
             if (other == player) continue;
             if (!handRaisedTime.containsKey(other.getUuid())) continue;
             if (isOnCooldown(other.getUuid())) continue;
@@ -761,8 +763,8 @@ public class HighFiveHandler {
         else if (maxSpeed >= SPEED_TIER_2) tier = 2; // Big impact
         else if (maxSpeed >= SPEED_TIER_1) tier = 1; // Medium impact
 
-        Vec3d pos1 = player1.getPos();
-        Vec3d pos2 = player2.getPos();
+        Vec3d pos1 = player1.getEntityPos();
+        Vec3d pos2 = player2.getEntityPos();
         Vec3d highFivePos = pos1.add(pos2).multiply(0.5).add(0, 1.4, 0);
 
         pendingEffects.put(player1.getUuid(), new PendingHighFive(
@@ -779,7 +781,7 @@ public class HighFiveHandler {
                 highFivePos.x, highFivePos.y, highFivePos.z,
                 player1.getUuid(), player2.getUuid(), tier
         );
-        for (ServerPlayerEntity other : PlayerLookup.all(player1.getServer())) {
+        for (ServerPlayerEntity other : PlayerLookup.all(player1.getEntityWorld().getServer())) {
             ServerPlayNetworking.send(other, successPayload);
         }
 
@@ -797,7 +799,7 @@ public class HighFiveHandler {
     
     private static void executeHighFiveEffects(ServerPlayerEntity player1, ServerPlayerEntity player2,
                                                Vec3d highFivePos, int tier) {
-        ServerWorld world = player1.getServerWorld();
+        ServerWorld world = player1.getEntityWorld();
 
         switch (tier) {
             case 0 -> executeTier0(world, highFivePos, player1, player2);
@@ -855,7 +857,8 @@ public class HighFiveHandler {
         spawnStarBurst(world, pos, 24, 0.7);
         world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 25, 0.2, 0.2, 0.2, 0.18);
         world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 15, 0.3, 0.3, 0.3, 0.1);
-        world.spawnParticles(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
+                pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.WAX_ON, pos.x, pos.y, pos.z, 15, 0.3, 0.3, 0.3, 0.05);
 
         // Medium knockback
@@ -881,7 +884,8 @@ public class HighFiveHandler {
         world.spawnParticles(ParticleTypes.EXPLOSION, pos.x, pos.y, pos.z, 3, 0.5, 0.5, 0.5, 0);
         world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 40, 0.3, 0.3, 0.3, 0.25);
         world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 25, 0.5, 0.5, 0.5, 0.15);
-        world.spawnParticles(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 2, 0, 0, 0, 0);
+        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
+                pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y, pos.z, 20, 0.4, 0.4, 0.4, 0.1);
         world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.x, pos.y, pos.z, 30, 0.5, 0.5, 0.5, 0.3);
 
@@ -923,18 +927,18 @@ public class HighFiveHandler {
         for (Entity entity : world.getOtherEntities(null, pushBox)) {
             if (entity == p1 || entity == p2) continue; // Don't push the high-fivers
 
-            double dist = entity.getPos().distanceTo(pos);
+            double dist = entity.getEntityPos().distanceTo(pos);
             if (dist > radius || dist < 0.5) continue;
 
             double strength = (1.0 - (dist / radius)) * 4.0 + 1.0; // 1.0 to 5.0 (much stronger!)
 
-            Vec3d dir = entity.getPos().subtract(pos).normalize();
+            Vec3d dir = entity.getEntityPos().subtract(pos).normalize();
             if (dir.lengthSquared() < 0.01) {
                 dir = new Vec3d(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
             }
 
             entity.addVelocity(dir.x * strength, strength * 0.6, dir.z * strength);
-            entity.velocityModified = true;
+            entity.velocityDirty = true;
 
             world.spawnParticles(ParticleTypes.CRIT,
                     entity.getX(), entity.getY() + 1, entity.getZ(),
@@ -953,8 +957,8 @@ public class HighFiveHandler {
     }
 
     private static void applyKnockback(ServerPlayerEntity p1, ServerPlayerEntity p2, Vec3d center, double strength) {
-        Vec3d dir1 = p1.getPos().subtract(center).normalize();
-        Vec3d dir2 = p2.getPos().subtract(center).normalize();
+        Vec3d dir1 = p1.getEntityPos().subtract(center).normalize();
+        Vec3d dir2 = p2.getEntityPos().subtract(center).normalize();
 
         if (dir1.lengthSquared() < 0.01) dir1 = new Vec3d(1, 0, 0);
         if (dir2.lengthSquared() < 0.01) dir2 = new Vec3d(-1, 0, 0);
@@ -963,8 +967,8 @@ public class HighFiveHandler {
         p1.setVelocity(dir1.x * push, 0.05, dir1.z * push);
         p2.setVelocity(dir2.x * push, 0.05, dir2.z * push);
 
-        p1.velocityModified = true;
-        p2.velocityModified = true;
+        p1.velocityDirty = true;
+        p2.velocityDirty = true;
     }
 
     private static void createHighFiveExplosion(ServerWorld world, Vec3d pos, ServerPlayerEntity p1, ServerPlayerEntity p2) {
@@ -977,13 +981,13 @@ public class HighFiveHandler {
         for (Entity entity : world.getOtherEntities(null, damageBox)) {
             if (entity == p1 || entity == p2) continue; // Skip the high-fivers
 
-            double dist = entity.getPos().distanceTo(pos);
+            double dist = entity.getEntityPos().distanceTo(pos);
             if (dist > radius) continue;
 
             double knockbackStrength = (1.0 - dist / radius) * 2.0;
-            Vec3d knockDir = entity.getPos().subtract(pos).normalize();
+            Vec3d knockDir = entity.getEntityPos().subtract(pos).normalize();
             entity.addVelocity(knockDir.x * knockbackStrength, knockbackStrength * 0.5, knockDir.z * knockbackStrength);
-            entity.velocityModified = true;
+            entity.velocityDirty = true;
 
             if (entity instanceof ServerPlayerEntity target) {
                 float damage = (float)((1.0 - dist / radius) * 8.0);
@@ -1049,7 +1053,7 @@ public class HighFiveHandler {
         UUID partnerId = comboPartner.get(playerId);
         if (partnerId == null) return;
 
-        ServerPlayerEntity partner = player.getServer().getPlayerManager().getPlayer(partnerId);
+        ServerPlayerEntity partner = player.getEntityWorld().getServer().getPlayerManager().getPlayer(partnerId);
         if (partner == null) return;
 
         if (!comboWindowStart.containsKey(partnerId)) {
@@ -1085,15 +1089,15 @@ public class HighFiveHandler {
         comboFreezeEnd.put(id1, now + COMBO_FREEZE_MS);
         comboFreezeEnd.put(id2, now + COMBO_FREEZE_MS);
 
-        frozenPositions.put(id1, p1.getPos());
-        frozenPositions.put(id2, p2.getPos());
+        frozenPositions.put(id1, p1.getEntityPos());
+        frozenPositions.put(id2, p2.getEntityPos());
 
         p1.setVelocity(Vec3d.ZERO);
         p2.setVelocity(Vec3d.ZERO);
-        p1.velocityModified = true;
-        p2.velocityModified = true;
+        p1.velocityDirty = true;
+        p2.velocityDirty = true;
 
-        for (ServerPlayerEntity p : PlayerLookup.all(p1.getServer())) {
+        for (ServerPlayerEntity p : PlayerLookup.all(p1.getEntityWorld().getServer())) {
             ServerPlayNetworking.send(p, new FreezeStatePayload(id1, true));
             ServerPlayNetworking.send(p, new FreezeStatePayload(id2, true));
         }
@@ -1110,8 +1114,8 @@ public class HighFiveHandler {
 
    
     private static void executeSecondImpact(ServerPlayerEntity p1, ServerPlayerEntity p2) {
-        Vec3d pos = p1.getPos().add(p2.getPos()).multiply(0.5).add(0, 0.5, 0); // Lower - at waist level
-        ServerWorld world = p1.getServerWorld();
+        Vec3d pos = p1.getEntityPos().add(p2.getEntityPos()).multiply(0.5).add(0, 0.5, 0); // Lower - at waist level
+        ServerWorld world = p1.getEntityWorld();
 
         world.playSound(null, pos.x, pos.y, pos.z,
                 ModSounds.DAP_WEAK, SoundCategory.PLAYERS, 1.0f, 1.0f);

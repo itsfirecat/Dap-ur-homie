@@ -3,6 +3,7 @@ package com.cooptest;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,8 +28,8 @@ public class HeavenDapSoloCommand {
             return 0;
         }
 
-        ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos().add(0, 1.4, 0); // Just at your location
+        ServerWorld world = player.getEntityWorld();
+        Vec3d pos = player.getEntityPos().add(0, 1.4, 0); // Just at your location
 
 
         world.playSound(null, player.getX(), player.getY(), player.getZ(),
@@ -132,7 +133,8 @@ public class HeavenDapSoloCommand {
                         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, pos.x, pos.y, pos.z, 2, 2, 2, 2, 0);
                         world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 10, 3, 3, 3, 0.3);
                         world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 5, 2, 2, 2, 0.2);
-                        world.spawnParticles(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+                        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
+                                pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
                     });
                     
                     Thread.sleep(50); // Spawn every tick
@@ -147,7 +149,7 @@ public class HeavenDapSoloCommand {
 
 
     private static void teleportToHeaven(ServerPlayerEntity player, ServerWorld world, Vec3d groundPos) {
-        final Vec3d originalPos = player.getPos();
+        final Vec3d originalPos = player.getEntityPos();
         
         Vec3d heavenPos = new Vec3d(groundPos.x, groundPos.y + 1000, groundPos.z);
         player.teleport(world, heavenPos.x, heavenPos.y, heavenPos.z, player.getYaw(), player.getPitch());

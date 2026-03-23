@@ -13,7 +13,7 @@ public class FireDapTestCommand {
     
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("testfiredap")
-                .requires(source -> source.hasPermissionLevel(2)) // OP level 2
+                .requires(source -> source.hasPermissionLevel(2)) // bro that doesnt exist on 1.21.11 wtf
                 .executes(FireDapTestCommand::execute)
         );
     }
@@ -24,7 +24,7 @@ public class FireDapTestCommand {
         try {
             ServerPlayerEntity player = source.getPlayerOrThrow();
             
-            Vec3d pos = player.getPos();
+            Vec3d pos = player.getEntityPos();
             Vec3d fakePartnerPos = pos.add(1.0, 0, 0); // 1 block to the right
             
             player.sendMessage(Text.literal("§a[TEST] Starting Fire Dap test..."), false);

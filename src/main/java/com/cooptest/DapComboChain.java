@@ -1,7 +1,9 @@
 package com.cooptest;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -63,7 +65,7 @@ public class DapComboChain {
             this.p2Id = p2.getUuid();
             this.p1Ref = p1;
             this.p2Ref = p2;
-            this.world = p1.getServerWorld();
+            this.world = p1.getEntityWorld();
             this.impactPos = pos;
             this.stage = 0;
             this.ticksInStage = 0;
@@ -341,13 +343,14 @@ public class DapComboChain {
     }
 
     private static void spawnFinishEffect(ComboSession s) {
-        Vec3d mid = s.p1Ref.getPos().add(s.p2Ref.getPos()).multiply(0.5).add(0, 1.0, 0);
+        Vec3d mid = s.p1Ref.getEntityPos().add(s.p2Ref.getEntityPos()).multiply(0.5).add(0, 1.0, 0);
 
         s.world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, mid.x, mid.y, mid.z,
                 40, 0.5, 0.5, 0.5, 0.2);
         s.world.spawnParticles(ParticleTypes.END_ROD, mid.x, mid.y, mid.z,
                 20, 0.3, 0.8, 0.3, 0.1);
-        s.world.spawnParticles(ParticleTypes.FLASH, mid.x, mid.y, mid.z,
+        s.world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
+                mid.x, mid.y, mid.z,
                 2, 0, 0, 0, 0);
         s.world.playSound(null, mid.x, mid.y, mid.z,
                 SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 2.0f, 0.8f);

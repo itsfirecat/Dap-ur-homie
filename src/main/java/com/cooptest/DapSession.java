@@ -100,8 +100,8 @@ public class DapSession {
         // Stop velocity completely
         playerA.setVelocity(Vec3d.ZERO);
         playerB.setVelocity(Vec3d.ZERO);
-        playerA.velocityModified = true;
-        playerB.velocityModified = true;
+        playerA.velocityDirty = true;
+        playerB.velocityDirty = true;
 
         playerA.fallDistance = 0;
         playerB.fallDistance = 0;
@@ -109,8 +109,8 @@ public class DapSession {
 
    
     private void computeTargets(ServerPlayerEntity playerA, ServerPlayerEntity playerB) {
-        Vec3d posA = playerA.getPos();
-        Vec3d posB = playerB.getPos();
+        Vec3d posA = playerA.getEntityPos();
+        Vec3d posB = playerB.getEntityPos();
 
         Vec3d midpoint = posA.add(posB).multiply(0.5);
 
@@ -126,7 +126,7 @@ public class DapSession {
 
         double targetY = Math.max(posA.y, posB.y);
 
-        ServerWorld world = playerA.getServerWorld();
+        ServerWorld world = playerA.getEntityWorld();
         BlockPos groundPos = new BlockPos((int)midpoint.x, (int)targetY - 1, (int)midpoint.z);
         if (world.getBlockState(groundPos).isAir()) {
             targetY = Math.min(posA.y, posB.y);
@@ -138,8 +138,8 @@ public class DapSession {
 
     
     private void smoothMoveToTargets(ServerPlayerEntity playerA, ServerPlayerEntity playerB) {
-        Vec3d currentA = playerA.getPos();
-        Vec3d currentB = playerB.getPos();
+        Vec3d currentA = playerA.getEntityPos();
+        Vec3d currentB = playerB.getEntityPos();
 
         Vec3d newPosA = new Vec3d(
                 lerp(currentA.x, targetA.x, lerpSpeed),
@@ -154,16 +154,16 @@ public class DapSession {
         );
 
         
-        playerA.teleport(playerA.getServerWorld(), newPosA.x, newPosA.y, newPosA.z,
+        playerA.teleport(playerA.getEntityWorld(), newPosA.x, newPosA.y, newPosA.z,
                 playerA.getYaw(), playerA.getPitch());
-        playerB.teleport(playerB.getServerWorld(), newPosB.x, newPosB.y, newPosB.z,
+        playerB.teleport(playerB.getEntityWorld(), newPosB.x, newPosB.y, newPosB.z,
                 playerB.getYaw(), playerB.getPitch());
     }
 
    
     private void makeFaceEachOther(ServerPlayerEntity playerA, ServerPlayerEntity playerB) {
-        Vec3d posA = playerA.getPos();
-        Vec3d posB = playerB.getPos();
+        Vec3d posA = playerA.getEntityPos();
+        Vec3d posB = playerB.getEntityPos();
 
         // Calculate yaw to face each other
         double dx = posB.x - posA.x;
@@ -185,14 +185,14 @@ public class DapSession {
         playerB.prevBodyYaw = yawB;  // Prevent body lag
         playerB.prevHeadYaw = yawB;
 
-        playerA.teleport(playerA.getServerWorld(), posA.x, posA.y, posA.z, yawA, playerA.getPitch());
-        playerB.teleport(playerB.getServerWorld(), posB.x, posB.y, posB.z, yawB, playerB.getPitch());
+        playerA.teleport(playerA.getEntityWorld(), posA.x, posA.y, posA.z, yawA, playerA.getPitch());
+        playerB.teleport(playerB.getEntityWorld(), posB.x, posB.y, posB.z, yawB, playerB.getPitch());
     }
 
     
     private void checkPositioningComplete(ServerPlayerEntity playerA, ServerPlayerEntity playerB) {
-        double distA = playerA.getPos().distanceTo(targetA);
-        double distB = playerB.getPos().distanceTo(targetB);
+        double distA = playerA.getEntityPos().distanceTo(targetA);
+        double distB = playerB.getEntityPos().distanceTo(targetB);
 
         double threshold = (type == DapType.PERFECT_DAP) ? 0.35 : 0.25;
         if (distA < threshold && distB < threshold) {

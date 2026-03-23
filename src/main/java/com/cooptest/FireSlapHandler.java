@@ -23,7 +23,7 @@ public class FireSlapHandler {
 
     public static void register() {
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (world.isClient) return ActionResult.PASS;
+            if (world.isClient()) return ActionResult.PASS;
             if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.PASS;
             if (!(entity instanceof LivingEntity target)) return ActionResult.PASS;
             if (entity instanceof PlayerEntity) return ActionResult.PASS; // Don't slap players
@@ -38,18 +38,18 @@ public class FireSlapHandler {
     }
 
     private static void executeFireSlap(ServerPlayerEntity player, LivingEntity target) {
-        ServerWorld world = player.getServerWorld();
-        Vec3d playerPos = player.getPos();
-        Vec3d targetPos = target.getPos();
+        ServerWorld world = player.getEntityWorld();
+        Vec3d playerPos = player.getEntityPos();
+        Vec3d targetEntityPos = target.getEntityPos();
 
-        Vec3d direction = targetPos.subtract(playerPos).normalize();
+        Vec3d direction = targetEntityPos.subtract(playerPos).normalize();
 
         target.setVelocity(
                 direction.x * SLAP_KNOCKBACK,
                 SLAP_VERTICAL,
                 direction.z * SLAP_KNOCKBACK
         );
-        target.velocityModified = true;
+        target.velocityDirty = true;
 
         target.setOnFireFor(2);
 

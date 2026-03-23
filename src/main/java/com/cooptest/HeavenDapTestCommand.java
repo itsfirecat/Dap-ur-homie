@@ -40,8 +40,8 @@ public class HeavenDapTestCommand {
         UUID playerId = player.getUuid();
         UUID partnerId = partner.getUuid();
         long now = System.currentTimeMillis();
-        ServerWorld world = player.getServerWorld();
-        Vec3d pos = player.getPos().add(partner.getPos()).multiply(0.5).add(0, 1.4, 0);
+        ServerWorld world = player.getEntityWorld();
+        Vec3d pos = player.getEntityPos().add(partner.getEntityPos()).multiply(0.5).add(0, 1.4, 0);
 
         context.getSource().sendFeedback(() -> Text.literal("§d§lHEAVEN DAP TEST ACTIVATED!"), true);
 
@@ -94,10 +94,10 @@ public class HeavenDapTestCommand {
         ServerPlayerEntity nearest = null;
         double minDistance = 10.0;
 
-        for (ServerPlayerEntity other : player.getServerWorld().getPlayers()) {
+        for (ServerPlayerEntity other : player.getEntityWorld().getPlayers()) {
             if (other == player) continue;
 
-            double distance = player.getPos().distanceTo(other.getPos());
+            double distance = player.getEntityPos().distanceTo(other.getEntityPos());
             if (distance < minDistance) {
                 minDistance = distance;
                 nearest = other;
