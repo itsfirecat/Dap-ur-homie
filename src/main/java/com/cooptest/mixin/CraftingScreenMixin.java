@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CraftingScreenHandler.class)
 public class CraftingScreenMixin {
 
-    @Shadow @Final private RecipeInputInventory input;
-    @Shadow @Final private CraftingResultInventory result;
+     @Final private RecipeInputInventory input;
+     @Final private CraftingResultInventory result;
 
     @Inject(method = "onContentChanged", at = @At("HEAD"), cancellable = true)
     private void onCraftingChanged(net.minecraft.inventory.Inventory inventory, CallbackInfo ci) {
