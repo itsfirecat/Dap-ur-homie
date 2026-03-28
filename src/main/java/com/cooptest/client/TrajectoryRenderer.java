@@ -4,8 +4,9 @@ import com.cooptest.GrabInputHandler;
 import com.cooptest.PoseNetworking;
 import com.cooptest.PoseState;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -67,11 +68,11 @@ public class TrajectoryRenderer {
 
     private static void renderTrajectoryDots(WorldRenderContext context, Vec3d[] points, float charge) {
         MinecraftClient client = MinecraftClient.getInstance();
-        Camera camera = context.camera();
-        Vec3d camPos = camera.getEntityPos();
+        Camera camera = context.gameRenderer().getCamera();
+        Vec3d camPos = camera.getCameraPos();
 
         MatrixStack matrices = context.matrixStack();
-        matrices.push();
+        matrices.pushMatrix();
 
         matrices.translate(-camPos.x, -camPos.y, -camPos.z);
 
@@ -83,7 +84,7 @@ public class TrajectoryRenderer {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        Matrix4f matrix = matrices.peek().getEntityPositionMatrix();
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         int r = (int)(charge * 255);
         int g = (int)((1 - charge) * 255);

@@ -32,6 +32,13 @@ CarryingSlowdown.java
 ChargedDapHandler.java
 ClientCrouchPoseHandler.java
 CoopMovesConfig.java
+MahitoEffect.java
+MahitoItems.java
+MahitoTrollHandler.java
+DapHoldHandler.java
+DapSession.java
+DivineFlamCombo.java
+DivineFlamTestCommand.java
 
 ==== CLIENT ====
 FallDapClientHandler.java

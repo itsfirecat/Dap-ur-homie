@@ -13,6 +13,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.MinecraftServer;
@@ -2610,7 +2611,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
             // PERFECT FIRE DAP! No sounds/freeze here - FireDapCombo handles everything!
 
             // Extra particles for perfect
-            world.spawnParticles(ParticleTypes.DRAGON_BREATH, pos.x, pos.y, pos.z, 40, 0.8, 0.8, 0.8, 0.15);
+            world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, pos.x, pos.y + 2, pos.z,  40, 0.8, 0.8, 0.8, 0.15);
             world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, pos.x, pos.y, pos.z, 50, 0.6, 0.6, 0.6, 0.3);
 
             p1.sendMessage(net.minecraft.text.Text.literal("§c§l PERFECT FIRE DAP! "), true);

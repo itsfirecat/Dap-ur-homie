@@ -98,7 +98,7 @@ public class QTEClientHandler {
 
         long now = System.currentTimeMillis();
         var matrices = context.getMatrices();
-        matrices.push();
+        matrices.pushMatrix();
         matrices.translate(0, 0, 1000); // Render on top of everything
 
         int barWidth = 60;
@@ -192,7 +192,7 @@ public class QTEClientHandler {
             }
         }
 
-        matrices.pop();
+        matrices.popMatrix();
     }
 
 
