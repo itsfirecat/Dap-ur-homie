@@ -260,7 +260,7 @@ public class FallDapHandler {
         victim.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0, false, false));
 
         victim.setVelocity(0, 0, 0);
-        victim.velocityDirty = true;
+        victim.knockedBack = true;
 
         squashedPlayers.put(victim.getUuid(), System.currentTimeMillis() + SQUASHED_DURATION_MS);
 

@@ -99,7 +99,7 @@ public class QTEClientHandler {
         long now = System.currentTimeMillis();
         var matrices = context.getMatrices();
         matrices.pushMatrix();
-        matrices.translate(0, 0, 1000); // Render on top of everything
+        matrices.translate(0.0f, 0.0f); // Render on top of everything
 
         int barWidth = 60;
         int barHeight = 4;

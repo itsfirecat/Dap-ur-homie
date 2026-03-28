@@ -1,17 +1,9 @@
+nothing!
+
 ==== CLIENT ====
-ChargedDapClientHandler.java
-DivineFlamComboClient.java
-HeavenDapClientHandler.java
-HighFiveClientHandler.java
-HugClientHandler.java
-QTEClientHandler.java
-ThrowPowerHUD.java
-TrajectoryRenderer.java
+TrajectoryRenderer.java (commented out, fix later, pray it works)
 
 ==== MIXINS ====
-GrabbedPlayerControlMixin.java
-PlayerModelMixin.java
-
+nothing!
 ==== CLIENT MIXINS ====
-HeldItemRendererMixin.java
 MovementFreezeMixin.java

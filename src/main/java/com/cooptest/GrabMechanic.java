@@ -229,7 +229,7 @@ public class GrabMechanic {
                 ServerPlayerEntity held = pending.held;
                 if (held != null && held.isAlive()) {
                     held.setVelocity(pending.velocity);
-                    held.velocityDirty = true;
+                    held.knockedBack = true;
                     held.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(held));
 
                     boolean wasOnFire = held.isOnFire();
@@ -272,7 +272,7 @@ public class GrabMechanic {
 
                 Vec3d currentVel = player.getVelocity();
                 player.setVelocity(currentVel.add(driftX, 0, driftZ));
-                player.velocityDirty = true;
+                player.knockedBack = true;
             }
 
             long timeSinceThrow = System.currentTimeMillis() - data.throwTimeMs;
@@ -286,7 +286,7 @@ public class GrabMechanic {
                                 look.y * boostStrength + 0.5,
                                 look.z * boostStrength
                         ));
-                        player.velocityDirty = true;
+                        player.knockedBack = true;
 
                         player.startGliding(); /* i'm not sure but i THINK fallflying is gliding now?
                         idk, the official maven repo is acting like it is, ill check it out - update, it is. */
@@ -404,7 +404,7 @@ public class GrabMechanic {
 
                     // Slow down slightly after breaking
                     player.setVelocity(velocity.multiply(0.7));
-                    player.velocityDirty = true;
+                    player.knockedBack = true;
                     player.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(player));
 
                     // Particles

@@ -87,7 +87,7 @@ public class MahitoTrollHandler {
                 
                 if (data.trollStarted) {
                     victim.setVelocity(0, victim.getVelocity().y, 0);
-                    victim.velocityDirty = true;
+                    victim.knockedBack = true;
                 }
             }
         });

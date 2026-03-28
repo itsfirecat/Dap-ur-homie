@@ -106,7 +106,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
         PoseState pose = PoseNetworking.poseStates.getOrDefault(playerId, PoseState.NONE);
         PoseState lastPose = ArmPoseTracker.lastPose.getOrDefault(playerId, PoseState.NONE);
 
-        PlayerEntityModel<?> model = (PlayerEntityModel<?>) (Object) this;
+        PlayerEntityModel model = (PlayerEntityModel)(Object)this;
         ModelPart rightArm = model.rightArm;
         ModelPart leftArm = model.leftArm;
         ModelPart body = model.body;
@@ -158,13 +158,13 @@ public class PlayerModelMixin<T extends LivingEntity> {
             leftLeg.pitch = 0;
             leftLeg.yaw = 0;
             leftLeg.roll = (float) Math.toRadians(-SUPERMAN_LEG_ROLL);
-
+/*
             model.rightSleeve.copyTransform(rightArm);
             model.leftSleeve.copyTransform(leftArm);
             model.rightPants.copyTransform(rightLeg);
             model.leftPants.copyTransform(leftLeg);
             model.jacket.copyTransform(body);
-            model.hat.copyTransform(head);
+            model.hat.copyTransform(head); */
 
             ArmPoseTracker.lastPose.put(playerId, pose);
             return;
@@ -199,13 +199,13 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 leftLeg.pitch = 0;
                 leftLeg.yaw = 0;
                 leftLeg.roll = (float) Math.toRadians(-SUPERMAN_LEG_ROLL);
-
+/*
                 model.rightSleeve.copyTransform(rightArm);
                 model.leftSleeve.copyTransform(leftArm);
                 model.rightPants.copyTransform(rightLeg);
                 model.leftPants.copyTransform(leftLeg);
                 model.jacket.copyTransform(body);
-                model.hat.copyTransform(head);
+                model.hat.copyTransform(head); */
 
                 ArmPoseTracker.lastPose.put(playerId, pose);
                 return;
@@ -262,7 +262,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 rightArm.yaw = (float) Math.toRadians(30f);      // Slightly out
                 rightArm.roll = 0f;
 
-                model.rightSleeve.copyTransform(rightArm);
+//                model.rightSleeve.copyTransform(rightArm);
                 ArmPoseTracker.lastPose.put(playerId, pose);
                 return;
             }
@@ -546,11 +546,11 @@ public class PlayerModelMixin<T extends LivingEntity> {
         boolean shouldApplyBodyLean = inThrowAnimation || (pose == PoseState.GRAB_HOLDING && isCharging);
         if (shouldApplyBodyLean && Math.abs(currBodyLean) > 0.01f) {
             body.pitch += currBodyLean;
-            model.jacket.copyTransform(body);
+//            model.jacket.copyTransform(body);
         }
 
-        model.rightSleeve.copyTransform(rightArm);
-        model.leftSleeve.copyTransform(leftArm);
+//        model.rightSleeve.copyTransform(rightArm);
+//        model.leftSleeve.copyTransform(leftArm);
 
         ArmPoseTracker.lastPose.put(playerId, pose);
     }

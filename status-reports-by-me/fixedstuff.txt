@@ -63,12 +63,24 @@ MarioJumpClientHandler.java
 PushClientHandler.java
 HeavenWhiteOverlay.java
 ThrowAnimationTracker.java
+ChargedDapClientHandler.java
+DivineFlamComboClient.java
+HeavenDapClientHandler.java
+HighFiveClientHandler.java
+HugClientHandler.java
+QTEClientHandler.java
+ThrowPowerHUD.java
 
 ==== MIXINS ====
 CraftingResultSlotMixin.java
 CraftingScreenMixin.java
 ExampleMixin.java
 PlayerEntityPassengerOffsetMixin.java
+GrabbedPlayerControlMixin.java
+PlayerModelMixin.java
+
+everything here is done
 
 ==== CLIENT MIXINS ====
 PlayerEntityRendererMixin.java
+HeldItemRendererMixin.java

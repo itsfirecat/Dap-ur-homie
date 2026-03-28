@@ -100,8 +100,8 @@ public class DapSession {
         // Stop velocity completely
         playerA.setVelocity(Vec3d.ZERO);
         playerB.setVelocity(Vec3d.ZERO);
-        playerA.velocityDirty = true;
-        playerB.velocityDirty = true;
+        playerA.knockedBack = true;
+        playerB.knockedBack = true;
 
         playerA.fallDistance = 0;
         playerB.fallDistance = 0;
