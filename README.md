@@ -16,12 +16,12 @@ A Fabric mod for Minecraft 1.21.1 (and 1.21.11 soon, hopefully) that adds cooper
 
 ### Requirements for 1.21.1:
 
-- Fabric Loader 0.18.4
+- Fabric Loader 0.18.4+
 - Fabric API
 - Player Animation Library (PAL) — for all custom animations  https://modrinth.com/mod/player-animation-library
 
 ### Requirements for 1.21.11:
 
-- Fabric Loader 0.18.4
+- Fabric Loader 0.18.4+
 - Fabric API
 - Player Animation Library (PAL) — for all custom animations  https://modrinth.com/mod/player-animation-library
