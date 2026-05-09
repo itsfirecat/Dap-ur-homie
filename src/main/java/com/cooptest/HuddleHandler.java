@@ -8,6 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -225,7 +226,7 @@ public class HuddleHandler {
                                 server.execute(() -> {
                                     if (!pj.isAlive()) return;
                                     pj.teleport(pj.getEntityWorld(), stepX, pj.getY(), stepZ,
-                                            java.util.Set.of(), fYaw, 0);
+                                            java.util.Set.of(), fYaw, 0, false);
                                     if (frac >= 1.0) {
                                         pj.setYaw(fYaw); pj.setBodyYaw(fYaw); pj.setHeadYaw(fYaw);
                                     }
@@ -389,7 +390,7 @@ public class HuddleHandler {
             double px = center.x + HUDDLE_RADIUS * Math.cos(angle);
             double pz = center.z + HUDDLE_RADIUS * Math.sin(angle);
             float yaw = (float)(-Math.toDegrees(Math.atan2(center.x - px, center.z - pz)));
-            p.teleport(p.getEntityWorld(), px, p.getY(), pz, java.util.Set.of(), yaw, 0);
+            p.teleport(p.getEntityWorld(), px, p.getY(), pz, java.util.Set.of(), yaw, 0, false);
             p.setYaw(yaw); p.setBodyYaw(yaw); p.setHeadYaw(yaw);
         }
     }
@@ -588,7 +589,7 @@ public class HuddleHandler {
                     world.spawnParticles(ParticleTypes.HAPPY_VILLAGER,   mid.x, mid.y, mid.z, 80, 0.8, 0.8, 0.8, 0.5);
                     world.spawnParticles(ParticleTypes.COMPOSTER,        mid.x, mid.y, mid.z, 60, 0.6, 0.6, 0.6, 0.4);
                     world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, mid.x, mid.y, mid.z, 40, 0.6, 0.6, 0.6, 0.3);
-                    world.spawnParticles(ParticleTypes.FLASH,            mid.x, mid.y, mid.z,  3, 0.1, 0.1, 0.1,   0);
+                    world.spawnParticles((TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f)),            mid.x, mid.y, mid.z,  3, 0.1, 0.1, 0.1,   0);
                     world.spawnParticles(ParticleTypes.FIREWORK,         mid.x, mid.y, mid.z, 40, 0.5, 0.6, 0.5, 0.25);
                     world.spawnParticles(ParticleTypes.CRIT,             mid.x, mid.y - 0.5, mid.z, 20, 1.0, 0, 1.0, 0.05);
                     world.spawnParticles(ParticleTypes.HEART,            mid.x, mid.y, mid.z, 15, 0.6, 0.4, 0.6, 0.1);

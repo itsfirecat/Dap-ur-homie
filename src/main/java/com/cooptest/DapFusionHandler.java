@@ -635,7 +635,7 @@ public class DapFusionHandler {
                         s.world.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
                                 mid.x, mid.y + 2, mid.z,
                                 count / 2, spread * 0.8, spread * 0.8, spread * 0.8, 0.6);
-                        s.world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, mid.x, mid.y + 1, mid.z,  count / 3, spread, spread, spread, 0.3);
+                        s.world.spawnParticles((ParticleEffect)(ParticleEffect)ParticleTypes.DRAGON_BREATH, mid.x, mid.y + 1, mid.z,  count / 3, spread, spread, spread, 0.3);
                         s.world.spawnParticles(ParticleTypes.END_ROD,
                                 mid.x, mid.y + 1, mid.z,
                                 count / 2, spread, spread, spread, 0.4);
@@ -826,7 +826,7 @@ public class DapFusionHandler {
         s.world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, mid.x, mid.y, mid.z, count, intensity, intensity, intensity, 0.1 + stage * 0.02);
         s.world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, mid.x, mid.y, mid.z, count / 2, intensity, intensity, intensity, 0.2);
         if (stage >= 7) {
-            s.world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, mid.x, mid.y, mid.z, count, intensity, intensity, intensity, 0.15);
+            s.world.spawnParticles((ParticleEffect)(ParticleEffect)ParticleTypes.DRAGON_BREATH, mid.x, mid.y, mid.z, count, intensity, intensity, intensity, 0.15);
         }
     }
     private static void sendFusionQTE(ServerPlayerEntity player, String button, int stage, long windowStartMs, long windowEndMs, boolean open, int type) {

@@ -130,7 +130,7 @@ public class FallCatchHandler {
     }
 
     private static ServerPlayerEntity findCatcher(ServerPlayerEntity fallingPlayer) {
-        ServerWorld world = fallingplayer.getEntityWorld();
+        ServerWorld world = fallingPlayer.getEntityWorld();
         long now = System.currentTimeMillis();
 
         // Search in a generous area around the falling player

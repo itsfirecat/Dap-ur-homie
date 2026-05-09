@@ -2,6 +2,7 @@ package com.cooptest;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -100,7 +101,7 @@ public class NormalFacingDapHandler {
         });
         net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.register(
                 (player, world, hand, entity, hitResult) -> {
-                    if (world.isClient) return net.minecraft.util.ActionResult.PASS;
+                    if (world.isClient()) return net.minecraft.util.ActionResult.PASS;
                     if (!(player instanceof ServerPlayerEntity sp)) return net.minecraft.util.ActionResult.PASS;
                     if (!(entity instanceof ServerPlayerEntity target)) return net.minecraft.util.ActionResult.PASS;
                     if (sp.isSneaking()) return net.minecraft.util.ActionResult.PASS;
@@ -150,8 +151,8 @@ public class NormalFacingDapHandler {
         Vec3d pos2 = mid.add(flat.multiply(FACE_DIST * 0.5));
         float yaw1 = (float) Math.toDegrees(Math.atan2(-flat.x, flat.z));
         float yaw2 = yaw1 + 180f;
-        p1.teleport(p1.getEntityWorld(), pos1.x, p1.getY(), pos1.z, java.util.Set.of(), yaw1, p1.getPitch());
-        p2.teleport(p2.getEntityWorld(), pos2.x, p2.getY(), pos2.z, java.util.Set.of(), yaw2, p2.getPitch());
+        p1.teleport(p1.getEntityWorld(), pos1.x, p1.getY(), pos1.z, java.util.Set.of(), yaw1, p1.getPitch(), false);
+        p2.teleport(p2.getEntityWorld(), pos2.x, p2.getY(), pos2.z, java.util.Set.of(), yaw2, p2.getPitch(), false);
         p1.setYaw(yaw1); p1.setBodyYaw(yaw1); p1.setHeadYaw(yaw1);
         p2.setYaw(yaw2); p2.setBodyYaw(yaw2); p2.setHeadYaw(yaw2);
         p1.swingHand(net.minecraft.util.Hand.MAIN_HAND, true);
@@ -172,7 +173,7 @@ public class NormalFacingDapHandler {
             w.playSound(null, m.x, m.y, m.z, SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 1.0f, 1.2f);
             w.spawnParticles(ParticleTypes.CRIT, m.x, m.y, m.z, 12, 0.2, 0.2, 0.2, 0.1);
             w.spawnParticles(ParticleTypes.ENCHANTED_HIT, m.x, m.y, m.z, 6, 0.15, 0.15, 0.15, 0.07);
-            w.spawnParticles(ParticleTypes.FLASH, m.x, m.y, m.z, 2, 0, 0, 0, 0);
+            w.spawnParticles((TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f)), m.x, m.y, m.z, 2, 0, 0, 0, 0);
         });
         long[] punches = {1333, 1417, 1583, 1667, 1833, 2000, 2167};
         for (long t : punches) {

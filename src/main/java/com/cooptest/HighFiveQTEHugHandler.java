@@ -223,8 +223,8 @@ public class HighFiveQTEHugHandler {
         Vec3d mid  = pos1.add(pos2).multiply(0.5);
         Vec3d t1   = mid.subtract(dir.multiply(targetDist / 2.0));
         Vec3d t2   = mid.add(dir.multiply(targetDist / 2.0));
-        p1.teleport(p1.getEntityWorld(), t1.x, t1.y, t1.z, p1.getYaw(), p1.getPitch());
-        p2.teleport(p2.getEntityWorld(), t2.x, t2.y, t2.z, p2.getYaw(), p2.getPitch());
+        p1.teleport(p1.getEntityWorld(), t1.x, t1.y, t1.z, java.util.Set.of(), p1.getYaw(), p1.getPitch(), false);
+        p2.teleport(p2.getEntityWorld(), t2.x, t2.y, t2.z, java.util.Set.of(), p2.getYaw(), p2.getPitch(), false);
         s.p1BasePos = t1; s.p2BasePos = t2;
     }
     private static void playLeftArmFX(ServerPlayerEntity p1, ServerPlayerEntity p2, ServerWorld world) {

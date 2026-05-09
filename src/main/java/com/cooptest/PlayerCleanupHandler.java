@@ -22,7 +22,7 @@ public class PlayerCleanupHandler {
             MarioJumpHandler.cleanup(uuid);
             DivineFlamCombo.cleanup(uuid);
             KickHandler.cleanup(uuid);
-            BonkHandler.cleanup(uuid);
+//          BonkHandler.cleanup(uuid);
             NormalFacingDapHandler.cleanup(uuid);
             SitHandler.cleanup(uuid);
             SpinHandler.cleanup(uuid);

@@ -148,7 +148,7 @@ public class GroundPoundHandler {
                 living.knockedBack = true;
                 double dmg = scaledPower * (isMega ? 8.0 : 4.0) * falloff;
                 if (dmg > 0.5) {
-                    living.damage(world.getDamageSources().playerAttack(player), (float)dmg);
+                    living.clientDamage(world.getDamageSources().playerAttack(player));
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.cooptest;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -66,8 +67,8 @@ public class FacingDapHandler {
         Vec3d startPos2 = mid.add(flatDir.multiply(START_DIST * 0.5));
         float yaw1 = (float)(-Math.toDegrees(Math.atan2(flatDir.x, flatDir.z)));
         float yaw2 = yaw1 + 180f;
-        p1.teleport(world, startPos1.x, p1.getY(), startPos1.z, java.util.Set.of(), yaw1, 0);
-        p2.teleport(world, startPos2.x, p2.getY(), startPos2.z, java.util.Set.of(), yaw2, 0);
+        p1.teleport(world, startPos1.x, p1.getY(), startPos1.z, java.util.Set.of(), yaw1, 0, false);
+        p2.teleport(world, startPos2.x, p2.getY(), startPos2.z, java.util.Set.of(), yaw2, 0, false);
         PoseNetworking.broadcastAnimState(p1, ANIM_P1);
         PoseNetworking.broadcastAnimState(p2, ANIM_P2);
         ServerPlayNetworking.send(p1, new ChargedDapHandler.PerfectDapFreezePayload(true));
@@ -99,8 +100,8 @@ public class FacingDapHandler {
             double halfDist = currentDist * 0.5;
             Vec3d np1 = mid2.subtract(fd.multiply(halfDist));
             Vec3d np2 = mid2.add(fd.multiply(halfDist));
-            p1.teleport(world, np1.x, p1.getY(), np1.z, java.util.Set.of(), p1.getYaw(), 0);
-            p2.teleport(world, np2.x, p2.getY(), np2.z, java.util.Set.of(), p2.getYaw(), 0);
+            p1.teleport(world, np1.x, p1.getY(), np1.z, java.util.Set.of(), p1.getYaw(), 0, false);
+            p2.teleport(world, np2.x, p2.getY(), np2.z, java.util.Set.of(), p2.getYaw(), 0, false);
         }
         if (!s.impactFired && elapsed >= IMPACT_MS) {
             s.impactFired = true;
@@ -108,7 +109,7 @@ public class FacingDapHandler {
             Vec3d mid = p1.getEntityPos().add(p2.getEntityPos()).multiply(0.5).add(0, 1.2, 0);
             world.spawnParticles(ParticleTypes.CRIT,          mid.x, mid.y, mid.z, 20, 0.4, 0.4, 0.4, 0.15);
             world.spawnParticles(ParticleTypes.ENCHANTED_HIT, mid.x, mid.y, mid.z, 15, 0.3, 0.3, 0.3, 0.12);
-            world.spawnParticles(ParticleTypes.FLASH,         mid.x, mid.y, mid.z,  2,   0,   0,   0,    0);
+            world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), mid.x, mid.y, mid.z,  2,   0,   0,   0,    0);
             world.spawnParticles(ParticleTypes.END_ROD,       mid.x, mid.y, mid.z, 12, 0.3, 0.3, 0.3, 0.10);
         }
         if (!s.impactFrameFired && elapsed >= IMPACT_FRAME_MS) {
@@ -130,7 +131,8 @@ public class FacingDapHandler {
                             px, mid.y, pz, 1, 0, 0.05, 0, 0.01);
                 }
             }
-            world.spawnParticles(ParticleTypes.FLASH, mid.x, mid.y, mid.z, 3, 0.05, 0.05, 0.05, 0);
+
+            world.spawnParticles((TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f)), mid.x, mid.y, mid.z, 3, 0.05, 0.05, 0.05, 0);
             world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, mid.x, mid.y, mid.z, 1, 0, 0, 0, 0);
             ServerPlayNetworking.send(p1, new ChargedDapHandler.FacingDapImpactPayload());
             ServerPlayNetworking.send(p2, new ChargedDapHandler.FacingDapImpactPayload());

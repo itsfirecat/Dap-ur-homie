@@ -223,7 +223,7 @@ public class KickHandler {
             if (dist > reach) continue;
             double dot = (dist < 0.01) ? 1.0 : (fwdX * dx + fwdZ * dz) / dist;
             if (dot < 0.25) continue;
-            target.damage(world.getDamageSources().playerAttack(player), damage);
+            target.clientDamage(world.getDamageSources().playerAttack(player));
             if (target instanceof LivingEntity living) {
                 if (isDropKick) {
                     living.setVelocity(fwdX * 4.0, 0.8, fwdZ * 4.0);
@@ -299,7 +299,7 @@ public class KickHandler {
         ServerPlayNetworking.send(player, new KickCooldownPayload(KICK_COOLDOWN_MS));
     }
     private static void applySlowdown(ServerPlayerEntity player, double amount) {
-        var attr = player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        var attr = player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
         if (attr == null) return;
         attr.removeModifier(KICK_SLOW_ID);
         attr.addPersistentModifier(new EntityAttributeModifier(
@@ -307,7 +307,7 @@ public class KickHandler {
         ));
     }
     private static void removeSlowdown(ServerPlayerEntity player) {
-        var attr = player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        var attr = player.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
         if (attr != null) attr.removeModifier(KICK_SLOW_ID);
     }
     private static boolean isOnCooldown(UUID id) {

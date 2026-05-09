@@ -171,7 +171,7 @@ public class SpinHandler {
             if (helicopterSpinner.containsKey(targetId)) continue;
             if (GrabMechanic.holding.containsKey(spinnerId)) continue;
             if (GrabMechanic.heldBy.containsKey(targetId)) continue;
-            target.startRiding(spinner, true);
+            target.startRiding(spinner);
             helicopterRider.put(spinnerId, targetId);
             helicopterSpinner.put(targetId, spinnerId);
             EntityPassengersSetS2CPacket pkt = new EntityPassengersSetS2CPacket(spinner);

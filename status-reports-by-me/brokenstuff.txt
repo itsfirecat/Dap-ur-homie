@@ -1,35 +1,4 @@
 ugh here we go again
 
-GrabInteractionHandler.java
-FireDapTestCommand.java
-FallCatchHandler.java
-DivineFlamCombo.java
-FireSlapHandler.java
-GrabInputHandler.java
-FallDapHandler.java
-BonkConfig.java
-FacingDapHandler.java
-DivineFlamTestCommand.java
-DapSessionManager.java
-GrabMechanic.java
-GroundPoundHandler.java
-PerfectDapComboHandler.java
-NormalFacingDapHandler.java
-MeteorStrikeHandler.java
-MarioJumpHandler.java
-MahitoTrollHandler.java
-KickHandler.java
-HuddleHandler.java
-HighFiveQTEHugHandler.java
-HighFiveHugHandler.java
-HighFiveHandler.java
-HeavenDapSoloCommand.java
-FallDapHandler.java
 TestCoopClient.java
-SpinHandler.java
-SlapHandler.java
-SitHandler.java
-PushInteractionHandler.java
-PoseEffects.java
-PlayerCleanupHandler.java
-PerfectDapComboHandler.java
+idk: BonkConfig.java

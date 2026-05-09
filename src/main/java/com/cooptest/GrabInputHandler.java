@@ -36,15 +36,15 @@ public class GrabInputHandler {
 
     public static void register() {
         grabKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.grab", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "category.coopmoves"
+                "key.coopmoves.grab", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, ModKeyCategories.COOPMOVES
         ));
 
         throwKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.throw", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_T, "category.coopmoves"
+                "key.coopmoves.throw", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_T, ModKeyCategories.COOPMOVES
         ));
 
         shieldKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.shield", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "category.coopmoves"
+                "key.coopmoves.shield", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, ModKeyCategories.COOPMOVES
         ));
 
         // Register shield mode receiver for client-side sync
@@ -72,7 +72,7 @@ public class GrabInputHandler {
                 if (pose == PoseState.GRABBED && !client.player.hasVehicle()) {
                     // Check if wearing elytra
                     if (client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST).getItem()
-                            instanceof net.minecraft.item.ElytraItem) {
+                            == net.minecraft.item.Items.ELYTRA) { // insallah this works (slowed + reverb)
                         // Send elytra boost request to server
                         ClientPlayNetworking.send(new GrabNetworking.ElytraBoostRequestPayload());
                     }

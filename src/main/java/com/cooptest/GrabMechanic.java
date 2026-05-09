@@ -5,10 +5,13 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -85,7 +88,7 @@ public class GrabMechanic {
         PoseState holderPose = PoseNetworking.poseStates.getOrDefault(holder.getUuid(), PoseState.NONE);
         if (holderPose != PoseState.GRAB_READY) return false;
 
-        boolean success = held.startRiding(holder, true);
+        boolean success = held.startRiding(holder);
         if (!success) return false;
 
         holding.put(holder.getUuid(), held.getUuid());
@@ -274,16 +277,14 @@ public class GrabMechanic {
             }
 
             long timeSinceThrow = System.currentTimeMillis() - data.throwTimeMs;
-            if (!data.elytraBoostUsed && timeSinceThrow < 2000) {
-                if (elytraBoostRequests.remove(playerId) != null) {
-                    if (player.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST).getItem()
-                            instanceof net.minecraft.item.ElytraItem) {
-                        Vec3d look = player.getRotationVec(1.0f);
-                        double boostStrength = 1.5; // Similar to small rocket
-                        player.setVelocity(player.getVelocity().add(
-                                look.x * boostStrength,
-                                look.y * boostStrength + 0.5,
-                                look.z * boostStrength
+            if (!data.elytraBoostUsed && timeSinceThrow < 2000) {{
+                if (!data.elytraBoostUsed && timeSinceThrow < 2000L && elytraBoostRequests.remove(playerId) != null && player.getEquippedStack(EquipmentSlot.CHEST).getItem() .equals(net.minecraft.item.Items.ELYTRA.getDefaultStack().getItem())) {
+                    Vec3d look = player.getRotationVec(1.0f);
+                    double boostStrength = 1.5; // Similar to small rocket
+                    player.setVelocity(player.getVelocity().add(
+                            look.x * boostStrength,
+                            look.y * boostStrength + 0.5,
+                            look.z * boostStrength
                         ));
                         player.knockedBack = true;
 
@@ -398,7 +399,7 @@ public class GrabMechanic {
 
                     // Damage the player
                     if (damage > 0) {
-                        player.damage(world.getDamageSources().flyIntoWall(), damage);
+                        player.clientDamage(world.getDamageSources().flyIntoWall());
                     }
 
                     // Slow down slightly after breaking
@@ -751,7 +752,7 @@ public class GrabMechanic {
         for (var ghast : nearbyGhasts) {
             Vec3d ghastPos = ghast.getEntityPos();
 
-            ghast.damage(world.getDamageSources().playerAttack(player), 1000f);
+            ghast.clientDamage(world.getDamageSources().playerAttack((PlayerEntity)player));
 
             world.playSound(null, ghastPos.x, ghastPos.y, ghastPos.z,
                     ModSounds.EXPLOSION_IMPACT, SoundCategory.PLAYERS, 2.0f, 1.0f);
@@ -783,7 +784,7 @@ public class GrabMechanic {
         world.playSound(null, pos.x, pos.y, pos.z,
                 ModSounds.EXPLOSION_IMPACT, SoundCategory.PLAYERS, 1.5f, 1.0f);
 
-        player.damage(world.getDamageSources().onFire(), 16.0f);
+        player.clientDamage(world.getDamageSources().onFire());
 
         for (int i = 0; i < 20; i++) {
             double offsetX = (world.random.nextDouble() - 0.5) * 3;
@@ -903,7 +904,7 @@ public class GrabMechanic {
             world.spawnEntity(armorStand);
             shieldArmorStands.put(holderId, armorStand);
 
-            held.startRiding(armorStand, true);
+            held.startRiding(armorStand);
 
             world.playSound(null, holder.getX(), holder.getY(), holder.getZ(),
                     SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS, 1.0f, 1.2f);
@@ -946,7 +947,7 @@ public class GrabMechanic {
                 armorStand.discard();
             }
 
-            held.startRiding(holder, true);
+            held.startRiding(holder);
 
             PoseNetworking.poseStates.put(heldId, PoseState.GRABBED);
             PoseNetworking.broadcastPoseChange(held.getEntityWorld().getServer(), heldId, PoseState.GRABBED);
@@ -1065,13 +1066,10 @@ public class GrabMechanic {
                         new PoseNetworking.AnimStateSyncPayload(shieldPlayer.getUuid(), 29); // SHIELD = ordinal 29
                 ServerPlayNetworking.send(holder, animPayload);
 
-                
-                net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket posPacket =
-                        new net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket(shieldPlayer);
-                holder.networkHandler.sendPacket(posPacket);
 
-                net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket standPacket =
-                        new net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket(armorStand);
+                EntityPositionS2CPacket posPacket = new EntityPositionS2CPacket(shieldPlayer.getId(), net.minecraft.entity.EntityPosition.fromEntity(shieldPlayer), java.util.Set.of(), shieldPlayer.isOnGround());
+                holder.networkHandler.sendPacket(posPacket);
+                EntityPositionS2CPacket standPacket = new EntityPositionS2CPacket(armorStand.getId(), net.minecraft.entity.EntityPosition.fromEntity(armorStand), java.util.Set.of(), armorStand.isOnGround());
                 holder.networkHandler.sendPacket(standPacket);
             }
         }
@@ -1107,7 +1105,7 @@ public class GrabMechanic {
             if (isInShieldMode(holder.getUuid())) {
                 ServerPlayerEntity shield = getShieldPlayer(holder);
                 if (shield != null && shield.isAlive()) {
-                    shield.damage(source, amount);
+                    shield.clientDamage(source);
 
                     return false;
                 }

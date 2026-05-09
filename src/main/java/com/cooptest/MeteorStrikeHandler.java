@@ -240,7 +240,7 @@ public class MeteorStrikeHandler {
             double dist = e.getEntityPos().distanceTo(center);
             if (dist > DAMAGE_RADIUS) continue;
             float dmg = (float)(25.0 * (1.0 - dist / DAMAGE_RADIUS));
-            living.damage(world.getDamageSources().explosion(null, shooter), dmg);
+            living.clientDamage(world.getDamageSources().explosion(null, shooter));
             Vec3d dir = e.getEntityPos().subtract(center).normalize();
             if (dir.lengthSquared() < 0.001) dir = new Vec3d(0, 1, 0);
             living.addVelocity(dir.x * 3.0, 2.0, dir.z * 3.0);

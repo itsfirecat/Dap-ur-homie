@@ -37,7 +37,7 @@ public class DapSessionManager {
     public static void removeSession(UUID playerA) {
         DapSession session = activeSessions.remove(playerA);
         if (session != null) {
-            session.cancel();
+            // session.cancel();  i dont see a season for this? also its throwing an error so yeah
             playersInSession.remove(session.getPlayerAId());
             playersInSession.remove(session.getPlayerBId());
         }

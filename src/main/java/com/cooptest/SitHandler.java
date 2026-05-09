@@ -41,7 +41,7 @@ public class SitHandler {
                 p.knockedBack = true;
                 if (Math.abs(p.getY() - sitY) > 0.05) {
                     p.teleport(p.getEntityWorld(), p.getX(), sitY, p.getZ(),
-                            java.util.Set.of(), p.getYaw(), p.getPitch());
+                            java.util.Set.of(), p.getYaw(), p.getPitch(), false);
                 }
             }
         });
@@ -64,7 +64,7 @@ public class SitHandler {
         sittingPlayers.put(id, originalY);
         player.teleport(player.getEntityWorld(),
                 player.getX(), sitY, player.getZ(),
-                java.util.Set.of(), player.getYaw(), player.getPitch());
+                java.util.Set.of(), player.getYaw(), player.getPitch(), false);
         ServerPlayNetworking.send(player, new ChargedDapHandler.PerfectDapFreezePayload(true));
         PoseNetworking.broadcastAnimState(player,
                 com.cooptest.client.CoopAnimationHandler.AnimState.SITTING.ordinal());
@@ -150,7 +150,7 @@ public class SitHandler {
                 double t   = (double) step / LIFT_STEPS;
                 double liftY = sitY + (originalY - sitY) * t;
                 s.teleport(s.getEntityWorld(), s.getX(), liftY, s.getZ(),
-                        java.util.Set.of(), s.getYaw(), s.getPitch());
+                        java.util.Set.of(), s.getYaw(), s.getPitch(), false);
             });
         }
         final double SITTER_PUSH_FORWARD  = 0.2;
@@ -162,10 +162,10 @@ public class SitHandler {
             Vec3d dir2 = s.getEntityPos().subtract(h.getEntityPos()).normalize();
             Vec3d newHelperPos = h.getEntityPos().add(dir2.multiply(-HELPER_PUSH_BACKWARD));
             h.teleport(h.getEntityWorld(), newHelperPos.x, h.getY(), newHelperPos.z,
-                    java.util.Set.of(), h.getYaw(), h.getPitch());
+                    java.util.Set.of(), h.getYaw(), h.getPitch(), false);
             Vec3d newSitterPos = s.getEntityPos().add(dir2.multiply(-SITTER_PUSH_FORWARD));
             s.teleport(s.getEntityWorld(), newSitterPos.x, s.getY(), newSitterPos.z,
-                    java.util.Set.of(), s.getYaw(), s.getPitch());
+                    java.util.Set.of(), s.getYaw(), s.getPitch(), false);
         });
         schedule(server, 5200L, () -> {
             ServerPlayerEntity h = server.getPlayerManager().getPlayer(hid);
@@ -189,7 +189,7 @@ public class SitHandler {
         if (oy != null) {
             player.teleport(player.getEntityWorld(),
                     player.getX(), oy, player.getZ(),
-                    java.util.Set.of(), player.getYaw(), player.getPitch());
+                    java.util.Set.of(), player.getYaw(), player.getPitch(), false);
         }
         ServerPlayNetworking.send(player, new ChargedDapHandler.PerfectDapFreezePayload(false));
         PoseNetworking.broadcastAnimState(player,

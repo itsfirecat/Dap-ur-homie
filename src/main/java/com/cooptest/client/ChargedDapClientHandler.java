@@ -1,6 +1,7 @@
 package com.cooptest.client;
 
 import com.cooptest.ChargedDapHandler;
+import com.cooptest.ModKeyCategories;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -102,7 +103,7 @@ public class ChargedDapClientHandler {
 
     public static void register() {
         chargedDapKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.dap", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "category.coopmoves"
+                "key.coopmoves.dap", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, ModKeyCategories.COOPMOVES
         ));
 
         ClientPlayNetworking.registerGlobalReceiver(ChargedDapHandler.ChargeSyncPayload.ID,
@@ -243,7 +244,7 @@ public class ChargedDapClientHandler {
                 "key.coopmoves.fire_dap_combo",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_J,
-                "category.coopmoves"
+                ModKeyCategories.COOPMOVES
         ));
 
         ClientPlayNetworking.registerGlobalReceiver(ChargedDapHandler.FireDapWindowPayload.ID,
@@ -480,7 +481,7 @@ public class ChargedDapClientHandler {
             double velY = Math.random() * 0.2;
             double velZ = (Math.random() - 0.5) * 0.3;
 
-            client.world.addParticle(particle, x + offsetX, y + offsetY, z + offsetZ, velX, velY, velZ);
+            client.world.addParticleClient(particle, x + offsetX, y + offsetY, z + offsetZ, velX, velY, velZ);
         }
 
         if (perfect) {
@@ -488,7 +489,7 @@ public class ChargedDapClientHandler {
                 double angle = (i / 8.0) * Math.PI * 2;
                 double offsetX = Math.cos(angle) * 0.3;
                 double offsetZ = Math.sin(angle) * 0.3;
-                client.world.addParticle(net.minecraft.particle.ParticleTypes.ENCHANT,
+                client.world.addParticleClient(net.minecraft.particle.ParticleTypes.ENCHANT,
                         x + offsetX, y + 0.5, z + offsetZ, 0, 0.1, 0);
             }
         }

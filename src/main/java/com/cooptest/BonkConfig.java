@@ -1,4 +1,4 @@
-package com.cooptest;
+/* package com.cooptest;
 
 import java.io.*;
 import java.nio.file.*;
@@ -6,7 +6,7 @@ import java.util.Properties;
 
 /**
  IGNORE THIS
- */
+ (supposed to be comment out thingy here lfmao)
 public class BonkConfig {
 
     private static final Path CONFIG_PATH = Paths.get("config", "cooptest.properties");
@@ -41,3 +41,5 @@ public class BonkConfig {
         }
     }
 }
+
+*/
