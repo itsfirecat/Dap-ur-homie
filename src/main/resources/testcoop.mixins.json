@@ -8,14 +8,12 @@
     "ExampleMixin",
     "GrabbedPlayerControlMixin",
     "PlayerEntityPassengerOffsetMixin",
-    "PlayerModelMixin",
-    "PlayerRidingMixin"
+    "PlayerModelMixin"
   ],
   "client": [
     "client.HeldItemRendererMixin",
     "client.MovementFreezeMixin",
-    "client.PlayerEntityRendererMixin",
-    "client.InputAccessor"
+    "client.PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

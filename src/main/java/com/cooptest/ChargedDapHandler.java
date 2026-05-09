@@ -26,7 +26,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 import java.util.*;
 import java.util.Random;
@@ -595,8 +594,7 @@ public class ChargedDapHandler {
                 world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, pos.x, pos.y, pos.z, 2, 3, 3, 3, 0);
                 world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 10, 5, 5, 5, 0.3);
                 world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 5, 4, 4, 4, 0.2);
-                world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
-                pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
+                world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
             }
             Iterator<Map.Entry<UUID, Long>> perfectDapIt = perfectDapStartTime.entrySet().iterator();
             while (perfectDapIt.hasNext()) {
@@ -1916,8 +1914,7 @@ public class ChargedDapHandler {
             world.playSound(null, pos.x, pos.y, pos.z,
                     ModSounds.DAP_WEAK, SoundCategory.PLAYERS, 1.0f, 1.0f);
             spawnPrecisionDapParticles(world, pos, 3);
-world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
-                pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
+            world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
             createExplosion(world, pos, p1, p2, 3.5, 6.0f);
             applyKnockback(p1, p2, pos, 1.0);
             p1.sendMessage(net.minecraft.text.Text.literal("§6§l GREAT DAP! "), true);
@@ -1931,8 +1928,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
                     ModSounds.DAP_WEAK, SoundCategory.PLAYERS, 1.0f, 1.0f);
 
             spawnPrecisionDapParticles(world, pos, 3);
-            world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
-                pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
+            world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
             createExplosion(world, pos, p1, p2, 3.5, 6.0f);
             applyKnockback(p1, p2, pos, 1.0);
             p1.sendMessage(net.minecraft.text.Text.literal("§6§l GREAT DAP! "), true);
@@ -2073,7 +2069,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
                         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, pos.x, pos.y, pos.z, 20, 5, 5, 5, 0);
                         world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 300, 10, 10, 10, 0.5);
                         world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 200, 8, 8, 8, 0.4);
-                        world.spawnParticles((ParticleEffect)ParticleTypes.FLASH, pos.x, pos.y, pos.z, 10, 0.0, 0.0, 0.0, 0.0);
+                        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), pos.x, pos.y, pos.z, 10, 0, 0, 0, 0);
 
                         // Starburst
                         spawnStarBurst(world, pos, 100, 5.0);
@@ -2154,7 +2150,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
         if (player.getMainHandStack().isOf(net.minecraft.item.Items.TOTEM_OF_UNDYING)) {
             player.getMainHandStack().setCount(0);
         }
-        // Check offhand
+        // Check off hand
         if (player.getOffHandStack().isOf(net.minecraft.item.Items.TOTEM_OF_UNDYING)) {
             player.getOffHandStack().setCount(0);
         }
@@ -2165,7 +2161,10 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
 
         if (tickSpeedRestoreTime > 0 && now >= tickSpeedRestoreTime) {
             // Restore tick rate to normal (20 tps)
-            server.getCommandManager().parseAndExecute(server.getCommandSource().withSilent(), "tick rate 20");
+            server.getCommandManager().parseAndExecute(
+                    server.getCommandSource().withSilent(),
+                    "tick rate 20"
+            );
             tickSpeedRestoreTime = 0;
 
             // Notify players
@@ -2246,14 +2245,14 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
         // MASSIVE EXPLOSION at impact point!
         System.out.println("[Heaven Dap] 💥 Creating explosion...");
         world.createExplosion(null, midpoint.x, midpoint.y, midpoint.z, 8.0f, false,
-                World.ExplosionSourceType.MOB);
+                net.minecraft.world.World.ExplosionSourceType.MOB);
 
         // SONIC BOOM PARTICLES - 3 expanding white circles!
         System.out.println("[Heaven Dap] ⚪ Spawning sonic boom...");
         spawnSonicBoomCircles(world, midpoint);
 
         // Additional epic particles
-        world.spawnParticles((ParticleEffect)ParticleTypes.FLASH, midpoint.x, midpoint.y, midpoint.z, 5, 0, 0, 0, 0);
+        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), midpoint.x, midpoint.y, midpoint.z, 5, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, midpoint.x, midpoint.y, midpoint.z, 3, 0.5, 0.5, 0.5, 0);
         world.spawnParticles(ParticleTypes.END_ROD, midpoint.x, midpoint.y, midpoint.z, 50, 1.0, 1.0, 1.0, 0.3);
         world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, midpoint.x, midpoint.y, midpoint.z, 40, 0.8, 0.8, 0.8, 0.2);
@@ -2586,7 +2585,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
         world.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y + 1.0, pos.z, 30, 0.3, 0.3, 0.3, 0.2);
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, pos.x, pos.y + 1.0, pos.z, 15, 0.2, 0.2, 0.2, 0.15);
         world.spawnParticles(ParticleTypes.LAVA, pos.x, pos.y + 1.0, pos.z, 8, 0.3, 0.3, 0.3, 0);
-        world.spawnParticles((ParticleEffect)ParticleTypes.FLASH, pos.x, pos.y + 1.0, pos.z, 3, 0, 0, 0, 0);
+        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), pos.x, pos.y, pos.z, 3, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y + 1.0, pos.z, 20, 0.5, 0.5, 0.5, 0.15);
         world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, pos.x, pos.y + 1.0, pos.z, 25, 0.5, 0.5, 0.5, 0.3);
 
@@ -2720,7 +2719,8 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
                         float newYaw = finalCurrentYaw + (finalDiff * progress);
                         player.setYaw(newYaw);
                         // Don't control camera/head - only rotate body
-                                player.networkHandler.sendPacket(new EntityPositionS2CPacket(player.getId(), net.minecraft.entity.EntityPosition.fromEntity(player), java.util.Set.of(), player.isOnGround()));
+                        player.networkHandler.sendPacket(
+                                new EntityPositionS2CPacket(player.getId(), net.minecraft.entity.EntityPosition.fromEntity(player), java.util.Set.of(), player.isOnGround()));
                     });
                 } catch (InterruptedException e) { break; }
             }
@@ -3569,7 +3569,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
                 double z = midpoint.z + distance * Math.sin(rad);
 
                 world.spawnParticles(ParticleTypes.FLAME, x, midpoint.y + height, z, 5, 0.3, 0.3, 0.3, 0.04);
-                world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, x, midpoint.y + (double)height, z, 3, 0.2, 0.2, 0.2, 0.02);
+                world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, x, midpoint.y + height, z, 3, 0.2, 0.2, 0.2, 0.02);
                 world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, x, midpoint.y + height, z, 2, 0.15, 0.15, 0.15, 0.01);
             }
         }
@@ -3726,7 +3726,7 @@ world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f
                 // Damage based on distance
                 if (entity instanceof net.minecraft.entity.LivingEntity living) {
                     float damage = (float)((30 - distance) / 30.0 * 20.0);  // Up to 20 damage
-                    living.clientDamage(living.getDamageSources().explosion(null));
+                    living.clientDamage(living.getDamageSources().explosion(null, null));
                 }
             }
         }

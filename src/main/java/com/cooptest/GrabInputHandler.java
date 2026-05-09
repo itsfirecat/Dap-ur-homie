@@ -36,15 +36,15 @@ public class GrabInputHandler {
 
     public static void register() {
         grabKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.grab", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, ModKeyCategories.COOPMOVES
+                "key.coopmoves.grab", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "category.coopmoves"
         ));
 
         throwKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.throw", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_T, ModKeyCategories.COOPMOVES
+                "key.coopmoves.throw", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_T, "category.coopmoves"
         ));
 
         shieldKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.shield", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, ModKeyCategories.COOPMOVES
+                "key.coopmoves.shield", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "category.coopmoves"
         ));
 
         // Register shield mode receiver for client-side sync
@@ -72,7 +72,7 @@ public class GrabInputHandler {
                 if (pose == PoseState.GRABBED && !client.player.hasVehicle()) {
                     // Check if wearing elytra
                     if (client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST).getItem()
-                            == net.minecraft.item.Items.ELYTRA) { // insallah this works
+                            instanceof net.minecraft.item.ElytraItem) {
                         // Send elytra boost request to server
                         ClientPlayNetworking.send(new GrabNetworking.ElytraBoostRequestPayload());
                     }
@@ -202,7 +202,7 @@ public class GrabInputHandler {
     }
 
     private static boolean handsEmpty(MinecraftClient client) {
-        // Only check main hand - allow items in off-hand (shields, totems, etc.)
+        // Only check main hand - allow items in off-hand (shields, totems, etc)
         return client.player.getMainHandStack().isEmpty();
     }
 

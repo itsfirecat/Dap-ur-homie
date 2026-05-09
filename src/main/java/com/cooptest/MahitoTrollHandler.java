@@ -8,9 +8,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -162,11 +160,10 @@ public class MahitoTrollHandler {
         // Firework explosion on head!
         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, x, y + 2, z, 1, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.FIREWORK, x, y + 2, z, 50, 0.5, 0.5, 0.5, 0.3);
-        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
-                x, y, z, 3, 0, 0, 0, 0);
+        world.spawnParticles(ParticleTypes.FLASH, x, y + 2, z, 3, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, x, y + 2, z, 30, 0.4, 0.4, 0.4, 0.15);
-// commenting ts out for now        world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, x, y + 2, z, 20, 0.3, 0.3, 0.3, 0.1);
-
+        world.spawnParticles(ParticleTypes.DRAGON_BREATH, x, y + 2, z, 20, 0.3, 0.3, 0.3, 0.1);
+        
         // Explosion sounds
         world.playSound(null, x, y, z,
             SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, SoundCategory.PLAYERS, 2.0f, 1.0f);
@@ -176,7 +173,7 @@ public class MahitoTrollHandler {
             SoundEvents.ENTITY_PLAYER_HURT, SoundCategory.PLAYERS, 1.0f, 0.5f);
         
         // Kill with custom death message
-        victim.damage(world, world.getDamageSources().magic(), 9999.0F);
+        victim.damage(world.getDamageSources().magic(), Float.MAX_VALUE);
         
         // Announce
         for (ServerPlayerEntity player : world.getPlayers()) {

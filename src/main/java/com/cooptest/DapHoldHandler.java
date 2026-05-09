@@ -393,8 +393,7 @@ public class DapHoldHandler {
             x = mid.x; y = mid.y; z = mid.z;
         }
 
-        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
-                x, y, z, 3, 0, 0, 0, 0);
+        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f), x, y, z, 3, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.END_ROD,   x, y, z, 40, 0.4, 0.4, 0.4, 0.15);
         world.spawnParticles(ParticleTypes.WHITE_ASH, x, y, z, 80, 0.6, 0.6, 0.6, 0.08);
         world.spawnParticles(ParticleTypes.CLOUD,     x, y, z, 20, 0.3, 0.3, 0.3, 0.05);

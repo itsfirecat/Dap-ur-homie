@@ -1,5 +1,4 @@
 package com.cooptest.client;
-
 import com.cooptest.HighFiveHugHandler;
 import com.cooptest.ModKeyCategories;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -9,21 +8,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-/**
- Client-side hug handler
-  Press F to hug after high-five
- */
 public class HugClientHandler {
-
     private static KeyBinding hugKey;
-
     private static final Map<UUID, Boolean> inHug = new HashMap<>();
-
     public static void register() {
         hugKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.coopmoves.hug",
@@ -31,21 +21,16 @@ public class HugClientHandler {
                 GLFW.GLFW_KEY_F,
                 ModKeyCategories.COOPMOVES
         ));
-
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
-
             if (hugKey.isPressed()) {
                 ClientPlayNetworking.send(new HighFiveHugHandler.HugHoldPayload());
             }
         });
     }
-
-
     public static boolean isLocalPlayerInHug() {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return false;
-
         var animState = CoopAnimationHandler.getAnimState(client.player.getUuid());
         return animState == CoopAnimationHandler.AnimState.HUG_START
                 || animState == CoopAnimationHandler.AnimState.HUGGING

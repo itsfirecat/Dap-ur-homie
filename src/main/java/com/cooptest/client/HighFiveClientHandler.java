@@ -2,7 +2,6 @@ package com.cooptest.client;
 
 import com.cooptest.ChargedDapHandler;
 import com.cooptest.HighFiveHandler;
-import com.cooptest.ModKeyCategories;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -36,7 +35,7 @@ public class HighFiveClientHandler {
     private static final Map<UUID, Boolean> frozenPlayers = new HashMap<>();
     public static void register() {
         highFiveKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.coopmoves.highfive", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_H, ModKeyCategories.COOPMOVES
+                "key.coopmoves.highfive", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_H, "category.coopmoves"
         ));
 
         ClientPlayNetworking.registerGlobalReceiver(HighFiveHandler.HandRaisedSyncPayload.ID,

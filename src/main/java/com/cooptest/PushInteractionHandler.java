@@ -64,7 +64,7 @@ public class PushInteractionHandler {
 
     public static void register() {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-            if (world.isClient()) return ActionResult.PASS;
+            if (world.isClient) return ActionResult.PASS;
             if (!(entity instanceof PlayerEntity target)) return ActionResult.PASS;
             if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.PASS;
             if (!(target instanceof ServerPlayerEntity serverTarget)) return ActionResult.PASS;
@@ -202,8 +202,8 @@ public class PushInteractionHandler {
         BlockPos pos = player.getBlockPos();
         for (int y = 1; y <= 15; y++) {
             BlockPos check = pos.up(y);
-            BlockState state = player.getEntityWorld().getBlockState(check);
-            if (!state.isAir() && state.isSolidBlock(player.getEntityWorld(), check)) {
+            BlockState state = player.getWorld().getBlockState(check);
+            if (!state.isAir() && state.isSolidBlock(player.getWorld(), check)) {
                 return y;
             }
         }

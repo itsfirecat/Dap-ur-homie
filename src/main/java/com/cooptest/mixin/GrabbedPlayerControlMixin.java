@@ -43,7 +43,7 @@ public abstract class GrabbedPlayerControlMixin {
 
                 self.setHeadYaw(holderYaw);
                 self.setPitch(holderPitch);
-                self.lastPitch = holderPitch;
+                self.prevPitch = holderPitch;
             }
         }
     }

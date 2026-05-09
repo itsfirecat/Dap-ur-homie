@@ -177,7 +177,7 @@ public class DivineFlamTestCommand {
                         double radiusAtHeight = BASE_RADIUS - (heightProgress * (BASE_RADIUS - TOP_RADIUS));
 
                         if (distance2D > SAFE_RADIUS && distance2D < radiusAtHeight) {
-                            living.clientDamage(this.world.getDamageSources().onFire());
+                            living.damage(world.getDamageSources().onFire(), 30.0f);
                             living.setOnFireFor(10);
                         }
                     }
