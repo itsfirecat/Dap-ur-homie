@@ -47,8 +47,8 @@ public class MeteorStrikeClientHandler {
         int sw = client.getWindow().getScaledWidth();
         int sh = client.getWindow().getScaledHeight();
         var mat = ctx.getMatrices();
-        mat.push();
-        mat.translate(0, 0, 500);
+        mat.pushMatrix();
+    //  mat.translate(0, 0, 500);
         if (countdownMs > 0) {
             String cdText = "☄ METEOR IN " + String.format("%.1f", countdownMs / 1000.0) + "s";
             int tw = client.textRenderer.getWidth(cdText);
@@ -68,7 +68,7 @@ public class MeteorStrikeClientHandler {
             int tiw = client.textRenderer.getWidth(timer);
             ctx.drawText(client.textRenderer, timer, bx + (bw - tiw) / 2, by + bh + 3, 0xFFAAAAAA, false);
         }
-        mat.pop();
+        mat.popMatrix();
     }
     public static net.minecraft.client.option.KeyBinding getBurstKey() { return null; }
 }

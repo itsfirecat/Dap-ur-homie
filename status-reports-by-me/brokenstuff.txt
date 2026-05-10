@@ -1,4 +1,4 @@
 ugh here we go again
 
-TestCoopClient.java
 idk: BonkConfig.java
+needs revision:    CoopImpactRenderType.java

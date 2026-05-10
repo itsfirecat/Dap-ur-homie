@@ -201,10 +201,10 @@ public class FusionClientHandler {
             int sw = client.getWindow().getScaledWidth();
             int sh = client.getWindow().getScaledHeight();
             var mat = ctx.getMatrices();
-            mat.push();
-            mat.translate(0, 0, 10000);
+            mat.pushMatrix();
+        //  mat.translate(0, 0, 10000); dont need it i think
             ctx.fill(0, 0, sw, sh, (a << 24) | 0x000000);
-            mat.pop();
+            mat.popMatrix();
             return;
         }
         if (currentPhase < 0) return;
@@ -212,8 +212,7 @@ public class FusionClientHandler {
         int sw = client.getWindow().getScaledWidth();
         int sh = client.getWindow().getScaledHeight();
         var mat = ctx.getMatrices();
-        mat.push();
-        mat.translate(0, 0, 900);
+        mat.pushMatrix();
         if (now < flashEndTime) {
             float p = 1f - (float)(now - (flashEndTime - 800)) / 800f;
             int a = (int)(clamp(p) * 120);
@@ -290,7 +289,7 @@ public class FusionClientHandler {
                 float alpha = inZone ? (float)(Math.sin(now / 60.0) * 0.4 + 0.6)
                         : (float)(Math.sin(now / 120.0) * 0.2 + 0.8);
                 int a = (int)(alpha * 255);
-                String keyText = QTEClientHandler.resolveKeyName(expectedButton);
+                String keyText = QTEClientHandler.getExpectedButton();
                 int kw = client.textRenderer.getWidth(keyText);
                 ctx.drawText(client.textRenderer, keyText, (sw-kw)/2, by - 9, (a<<24)|0xFFFFFF, true);
             }
@@ -306,7 +305,7 @@ public class FusionClientHandler {
                 }
             }
         }
-        mat.pop();
+        mat.popMatrix();
     }
     private static float clamp(float v) { return Math.max(0f, Math.min(1f, v)); }
     private static void scheduleReset(long delayMs) {

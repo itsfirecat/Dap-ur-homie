@@ -35,7 +35,7 @@ public class PlayerEntityRendererMixin {
         PoseState pose = PoseNetworking.poseStates.getOrDefault(player.getUuid(), PoseState.NONE);
 
         if (pose == PoseState.GRABBED) {
-            matrices.push();
+            matrices.pushMatrix();
 
             float facingYaw;
 
@@ -84,7 +84,7 @@ public class PlayerEntityRendererMixin {
                                int light, CallbackInfo ci) {
         Boolean pushed = matrixPushed.get(player.getUuid());
         if (pushed != null && pushed) {
-            matrices.pop();
+            matrices.popMatrix();
             matrixPushed.put(player.getUuid(), false);
         }
     }
