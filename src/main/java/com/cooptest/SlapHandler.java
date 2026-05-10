@@ -61,7 +61,7 @@ public class SlapHandler {
         PayloadTypeRegistry.playS2C().register(ScreenClosePayload.ID,    ScreenClosePayload.CODEC);
     }
     public static boolean checkSlapOnRelease(ServerPlayerEntity attacker) {
-        Vec3d aEye  = attacker.getEntityPos().add(0, attacker.getEyeHeight(attacker.getEntity().getEntityPose()), 0);
+        Vec3d aEye  = attacker.getEntityPos().add(0, attacker.getEyeHeight(attacker.getEntity().getEntity().getPose()), 0);
         Vec3d aLook = attacker.getRotationVec(1.0f);
         ServerPlayerEntity victim = null;
         double closest = SLAP_RANGE + 0.001;

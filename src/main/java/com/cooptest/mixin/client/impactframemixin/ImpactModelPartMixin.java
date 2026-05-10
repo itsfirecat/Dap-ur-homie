@@ -4,6 +4,7 @@ import com.cooptest.client.CoopImpactHandler;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -48,35 +49,40 @@ public abstract class ImpactModelPartMixin {
         return new VertexConsumer() {
             @Override
             public VertexConsumer vertex(float x, float y, float z) {
-                original.vertex(x, y, z);
-                return this;
+                return original.vertex(x, y, z);
             }
             @Override
-            public VertexConsumer color(int r, int g, int b, int a) {
-                // whiteFrame=true  → screen WHITE → entity BLACK
-                // whiteFrame=false → screen BLACK → entity WHITE (overlay=0 above handles it)
-                return white ? original.color(0, 0, 0, 255)
-                        : original.color(255, 255, 255, 255);
+            public VertexConsumer color(int argb) {
+                return white ? original.color(0xFF000000) : original.color(0xFFFFFFFF);
             }
+
             @Override
             public VertexConsumer texture(float u, float v) {
-                original.texture(u, v);
-                return this;
+                return null;
             }
+
             @Override
             public VertexConsumer overlay(int u, int v) {
-                original.overlay(u, v);
-                return this;
+                return null;
             }
+
             @Override
             public VertexConsumer light(int u, int v) {
-                original.light(240, 240);
-                return this;
+                return null;
             }
+
             @Override
             public VertexConsumer normal(float x, float y, float z) {
-                original.normal(x, y, z);
-                return this;
+                return null;
+            }
+
+            @Override
+            public VertexConsumer color(int r, int g, int b, int a) {
+                return white ? original.color(0, 0, 0, 255) : original.color(255, 255, 255, 255);
+            }
+            @Override
+            public VertexConsumer lineWidth(float width) {
+                return original.lineWidth(width);
             }
         };
     }

@@ -1,5 +1,5 @@
 {
-  ModKeyCategories.COOPMOVES: "Dap Ur HOMIES",
+  "key.category.testcoop.coopmoves": "Dap Ur HOMIES",
 
   "key.coopmoves.grab": "Grab / Catch",
   "key.coopmoves.throw": "YEET (Hold)",
@@ -8,6 +8,7 @@
   "key.coopmoves.highfive": "High Five",
   "key.coopmoves.push": "Push EM",
   "key.coopmoves.fire_dap_combo": "Fire Combo",
+  "key.coopmoves.hug": "Hug",
 
   "effect.testcoop.mahito": "Mahito's Curse",
   "item.minecraft.potion.effect.mahito_stuff": "Mahito Stuff Potion",

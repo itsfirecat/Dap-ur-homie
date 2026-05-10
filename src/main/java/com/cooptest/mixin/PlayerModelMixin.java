@@ -4,8 +4,11 @@ import com.cooptest.ArmPoseTracker;
 import com.cooptest.GrabInputHandler;
 import com.cooptest.PoseNetworking;
 import com.cooptest.PoseState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -98,15 +101,18 @@ public class PlayerModelMixin<T extends LivingEntity> {
     // END ADJUSTABLE SETTINGS
     // ==================================================================================
 
-    @Inject(method = "setAngles", at = @At("TAIL"))
-    private void injectPose(T entity, float f, float g, float h, float i, float j, CallbackInfo ci) {
+    @Inject(method = "setAngles(Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;)V", at = @At("TAIL"))
+    private void injectPose(PlayerEntityRenderState state, CallbackInfo ci) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null) return;
+        Entity entity = client.world.getEntityById(state.id);
         if (!(entity instanceof PlayerEntity player)) return;
 
         UUID playerId = player.getUuid();
         PoseState pose = PoseNetworking.poseStates.getOrDefault(playerId, PoseState.NONE);
         PoseState lastPose = ArmPoseTracker.lastPose.getOrDefault(playerId, PoseState.NONE);
 
-        PlayerEntityModel<?> model = (PlayerEntityModel<?>) (Object) this;
+        PlayerEntityModel model = (PlayerEntityModel) (Object) this;
         ModelPart rightArm = model.rightArm;
         ModelPart leftArm = model.leftArm;
         ModelPart body = model.body;
@@ -159,12 +165,12 @@ public class PlayerModelMixin<T extends LivingEntity> {
             leftLeg.yaw = 0;
             leftLeg.roll = (float) Math.toRadians(-SUPERMAN_LEG_ROLL);
 
-            model.rightSleeve.copyTransform(rightArm);
-            model.leftSleeve.copyTransform(leftArm);
-            model.rightPants.copyTransform(rightLeg);
-            model.leftPants.copyTransform(leftLeg);
-            model.jacket.copyTransform(body);
-            model.hat.copyTransform(head);
+            model.rightSleeve.setTransform(rightArm.getTransform());
+            model.leftSleeve.setTransform(leftArm.getTransform());
+            model.rightPants.setTransform(rightLeg.getTransform());
+            model.leftPants.setTransform(leftLeg.getTransform());
+            model.jacket.setTransform(body.getTransform());
+            model.hat.setTransform(head.getTransform());
 
             ArmPoseTracker.lastPose.put(playerId, pose);
             return;
@@ -200,12 +206,12 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 leftLeg.yaw = 0;
                 leftLeg.roll = (float) Math.toRadians(-SUPERMAN_LEG_ROLL);
 
-                model.rightSleeve.copyTransform(rightArm);
-                model.leftSleeve.copyTransform(leftArm);
-                model.rightPants.copyTransform(rightLeg);
-                model.leftPants.copyTransform(leftLeg);
-                model.jacket.copyTransform(body);
-                model.hat.copyTransform(head);
+                model.rightSleeve.setTransform(rightArm.getTransform());
+                model.leftSleeve.setTransform(leftArm.getTransform());
+                model.rightPants.setTransform(rightLeg.getTransform());
+                model.leftPants.setTransform(leftLeg.getTransform());
+                model.jacket.setTransform(body.getTransform());
+                model.hat.setTransform(head.getTransform());
 
                 ArmPoseTracker.lastPose.put(playerId, pose);
                 return;
@@ -262,7 +268,7 @@ public class PlayerModelMixin<T extends LivingEntity> {
                 rightArm.yaw = (float) Math.toRadians(30f);      // Slightly out
                 rightArm.roll = 0f;
 
-                model.rightSleeve.copyTransform(rightArm);
+                model.rightSleeve.setTransform(rightArm.getTransform());
                 ArmPoseTracker.lastPose.put(playerId, pose);
                 return;
             }
@@ -546,11 +552,11 @@ public class PlayerModelMixin<T extends LivingEntity> {
         boolean shouldApplyBodyLean = inThrowAnimation || (pose == PoseState.GRAB_HOLDING && isCharging);
         if (shouldApplyBodyLean && Math.abs(currBodyLean) > 0.01f) {
             body.pitch += currBodyLean;
-            model.jacket.copyTransform(body);
+            model.jacket.setTransform(body.getTransform());
         }
 
-        model.rightSleeve.copyTransform(rightArm);
-        model.leftSleeve.copyTransform(leftArm);
+        model.rightSleeve.setTransform(rightArm.getTransform());
+        model.leftSleeve.setTransform(leftArm.getTransform());
 
         ArmPoseTracker.lastPose.put(playerId, pose);
     }
