@@ -4299,7 +4299,7 @@ public class ChargedDapHandler {
                 double z = midpoint.z + distance * Math.sin(rad);
 
                 world.spawnParticles(ParticleTypes.FLAME, x, midpoint.y + height, z, 5, 0.3, 0.3, 0.3, 0.04);
-                world.spawnParticles((ParticleEffect)(ParticleEffect)ParticleTypes.DRAGON_BREATH, x, midpoint.y + height, z, 3, 0.2, 0.2, 0.2, 0.02);
+                world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, x, midpoint.y + height, z, 3, 0.2, 0.2, 0.2, 0.02);
                 world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, x, midpoint.y + height, z, 2, 0.15, 0.15, 0.15, 0.01);
             }
         }
