@@ -3,7 +3,9 @@ package com.cooptest.client;
 import com.cooptest.GrabInputHandler;
 import com.cooptest.PoseNetworking;
 import com.cooptest.PoseState;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.buffers.*;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.*;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
@@ -12,7 +14,10 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
-
+import net.minecraft.client.gl.*;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.util.BufferAllocator;
+import net.minecraft.client.render.RenderLayer;
 
 public class TrajectoryRenderer {
 
@@ -24,7 +29,12 @@ public class TrajectoryRenderer {
     private static final float DOT_SIZE = 0.08f;
     private static final float MIN_POWER_MULT = 1.5f;
     private static final float MAX_POWER_MULT = 3.5f;
+    // BufferAllocator is the correct allocator type — takes a byte size
+    private static final BufferAllocator ALLOCATOR = new BufferAllocator(786432);
 
+    // DEBUG_FILLED_BOX already has blending and no cull — use it directly.
+// POSITION_COLOR_SNIPPET is private so you can't build on top of it.
+    private static final RenderPipeline TRAJECTORY_PIPELINE = RenderPipelines.DEBUG_FILLED_BOX;
     public static void register() {
         WorldRenderEvents.END_MAIN.register(TrajectoryRenderer::render);
     }
@@ -42,11 +52,9 @@ public class TrajectoryRenderer {
         float chargeProgress = GrabInputHandler.getThrowChargeProgress();
         if (chargeProgress <= 0) return;
 
-        // fix later and pray it works rn
-/*
         float power = MIN_POWER_MULT + (MAX_POWER_MULT - MIN_POWER_MULT) * chargeProgress;
 
-        Vec3d lookVec = client.player.getRotationVec(context.tickCounter().getTickDelta());
+        Vec3d lookVec = client.player.getRotationVec(client.getRenderTickCounter().getDynamicDeltaTicks());
         Vec3d startPos = client.player.getEyePos().add(0, 0.5, 0); // Above head
 
         Vec3d velocity = lookVec.multiply(power);
@@ -69,61 +77,47 @@ public class TrajectoryRenderer {
     }
 
     private static void renderTrajectoryDots(WorldRenderContext context, Vec3d[] points, float charge) {
-        MinecraftClient client = MinecraftClient.getInstance();
         Camera camera = context.gameRenderer().getCamera();
         Vec3d camPos = camera.getCameraPos();
 
-        MatrixStack matrices = context.matrixStack();
-        matrices.pushMatrix();
-
+        MatrixStack matrices = context.matrices();
+        matrices.push();
         matrices.translate(-camPos.x, -camPos.y, -camPos.z);
-
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getEntityPositionColorProgram);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-
         Matrix4f matrix = matrices.peek().getPositionMatrix();
+
+        VertexConsumer consumer = context.consumers().getBuffer(
+                RenderLayer.of("trajectory", RenderSetup.builder(
+                        RenderPipelines.DEBUG_FILLED_BOX
+                ).build())
+        );
 
         int r = (int)(charge * 255);
         int g = (int)((1 - charge) * 255);
         int b = 50;
-        int alpha = 200;
 
         for (int i = 0; i < points.length && points[i] != null; i++) {
             Vec3d point = points[i];
-
-            float fadeAlpha = alpha * (1.0f - (float)i / points.length);
-
-            float size = DOT_SIZE * (1.0f - (float)i / points.length * 0.5f); // Shrink towards end
-
+            int fadeAlpha = (int)(200 * (1.0f - (float)i / points.length));
+            float size = DOT_SIZE * (1.0f - (float)i / points.length * 0.5f);
             float x = (float)point.x;
             float y = (float)point.y;
             float z = (float)point.z;
 
-
-            buffer.vertex(matrix, x - size, y - size, z + size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x + size, y - size, z + size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x + size, y + size, z + size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x - size, y + size, z + size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x + size, y - size, z - size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x - size, y - size, z - size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x - size, y + size, z - size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x + size, y + size, z - size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x - size, y + size, z - size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x - size, y + size, z + size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x + size, y + size, z + size).color(r, g, b, (int)fadeAlpha);
-            buffer.vertex(matrix, x + size, y + size, z - size).color(r, g, b, (int)fadeAlpha);
+            consumer.vertex(matrix, x-size, y-size, z+size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x+size, y-size, z+size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x+size, y+size, z+size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x-size, y+size, z+size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x+size, y-size, z-size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x-size, y-size, z-size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x-size, y+size, z-size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x+size, y+size, z-size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x-size, y+size, z-size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x-size, y+size, z+size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x+size, y+size, z+size).color(r, g, b, fadeAlpha);
+            consumer.vertex(matrix, x+size, y+size, z-size).color(r, g, b, fadeAlpha);
         }
 
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
-
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
-
-        matrices.pop(); */
+        matrices.pop();
+        // context.consumers() flushes automatically at end of frame — no manual draw call needed
     }
 }

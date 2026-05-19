@@ -162,11 +162,10 @@ public class MahitoTrollHandler {
         // Firework explosion on head!
         world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, x, y + 2, z, 1, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.FIREWORK, x, y + 2, z, 50, 0.5, 0.5, 0.5, 0.3);
-        world.spawnParticles(TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f),
-                x, y, z, 3, 0, 0, 0, 0);
+        world.spawnParticles((TintedParticleEffect.create(ParticleTypes.FLASH, 1f, 1f, 1f)), x, y + 2, z, 3, 0, 0, 0, 0);
         world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, x, y + 2, z, 30, 0.4, 0.4, 0.4, 0.15);
-// commenting ts out for now        world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, x, y + 2, z, 20, 0.3, 0.3, 0.3, 0.1);
-
+//        world.spawnParticles((ParticleEffect)ParticleTypes.DRAGON_BREATH, x, y + 2, z, 20, 0.3, 0.3, 0.3, 0.1);
+        
         // Explosion sounds
         world.playSound(null, x, y, z,
             SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, SoundCategory.PLAYERS, 2.0f, 1.0f);

@@ -1,9 +1,4 @@
-nothing!
+ugh here we go again
 
-==== CLIENT ====
-TrajectoryRenderer.java (commented out, fix later, pray it works)
-
-==== MIXINS ====
-nothing!
-==== CLIENT MIXINS ====
-MovementFreezeMixin.java
+idk: BonkConfig.java
+needs revision:    CoopImpactRenderType.java
